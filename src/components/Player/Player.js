@@ -9,17 +9,16 @@ class Player extends Component {
 
   capturePlayer = (event) => {
     this.player = event.target;
-    // this.player.playVideo();
   }
 
   play = (event) => {
-    console.log(this.player)
+    console.log(this.player);
     this.player.playVideo();
   }
 
   render() {
-    console.log("--PLAYLIST--");
-    console.log(this.props.playlist);
+    // console.log("--PLAYLIST--");
+    // console.log(this.props.playlist);
 
     const opts = {
       playerVars: { // https://developers.google.com/youtube/player_parameters
@@ -30,15 +29,17 @@ class Player extends Component {
       }
     };
 
-    const currentVideoID = this.props.playlist[0].split("v=")[1];
+    const currentVideoID = this.props.playlist[this.props.currentVideoIndex].split("v=")[1];
 
     return (
       <Aux>
         <h1>Currently Playing</h1>
         <button onClick={this.play}>PLAY</button>
         <button onClick={this.props.testt}>TESTT</button>
+        <button disabled={this.props.currentVideoIndex >= this.props.playlist.length - 1}
+          onClick={this.props.loadNextVideo}>Load Next Video</button>
         <div className="player-container">
-          <YouTube className={this.props.playerHidden ? "player-hidden" : "player-regular"} id="main-player"
+          <YouTube className={this.props.playerHidden ? "player-hidden" : "player-regular"}
             videoId={currentVideoID}
             opts={opts}
             onReady={this.capturePlayer}

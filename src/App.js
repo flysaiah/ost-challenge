@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
+import ChallengeInterface from './containers/ChallengeInterface/ChallengeInterface';
+
 import './App.css';
 
 class App extends Component {
-  render() {
+  render () {
     return (
-      <div className="App">
+      <div>
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
+          <h1 >My OST Challenge, Your Beats!</h1>
         </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <ChallengeInterface />
       </div>
     );
   }

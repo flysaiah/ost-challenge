@@ -5,6 +5,8 @@ import './Player.css';
 
 class Player extends Component {
 
+  // TODO: Handle bad URLs
+
   player = null;
 
   capturePlayer = (event) => {
@@ -31,6 +33,8 @@ class Player extends Component {
 
     const currentVideoID = this.props.playlist[this.props.currentVideoIndex].split("v=")[1];
 
+    const placeholder = this.props.playerHidden ? (<p>Guess the track to see what this is!</p>) : null
+
     return (
       <Aux>
         <h1>Currently Playing</h1>
@@ -38,13 +42,14 @@ class Player extends Component {
         <button onClick={this.props.testt}>TESTT</button>
         <button disabled={this.props.currentVideoIndex >= this.props.playlist.length - 1}
           onClick={this.props.loadNextVideo}>Load Next Video</button>
-        <div className="player-container">
+        <div className="player">
           <YouTube className={this.props.playerHidden ? "player-hidden" : "player-regular"}
             videoId={currentVideoID}
             opts={opts}
             onReady={this.capturePlayer}
           />
         </div>
+        {placeholder}
       </Aux>
     );
   }

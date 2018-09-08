@@ -1,11 +1,12 @@
 import React from 'react';
 import Player from '../../components/Player/Player';
+import Stats from '../../components/Stats/Stats';
 import './PlayerStatsContainer.css'
 
 const playerStatsContainer = (props) => {
 
   return (
-    <div className="player-stats-container">
+    <div className="card player-stats-container">
       <div className="player-container">
         <Player playlist={props.playlist}
         currentVideoIndex={props.currentVideoIndex}
@@ -14,7 +15,9 @@ const playerStatsContainer = (props) => {
         loadNextVideo={props.loadNextVideo}
         />
       </div>
-      <p>Stats</p>
+      <div className="stats-container">
+        <Stats />
+      </div>
     </div>
   );
 }

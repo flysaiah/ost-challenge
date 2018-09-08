@@ -1,0 +1,11 @@
+.top-row-container {
+
+}
+
+.bottom-row-container {
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}

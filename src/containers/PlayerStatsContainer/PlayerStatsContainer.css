@@ -1,5 +1,8 @@
 .player-stats-container {
-    margin: 20px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-bottom: 20px;
+    margin-top: 20px;
     display: flex;
     justify-content: space-around;
     width: 800px;

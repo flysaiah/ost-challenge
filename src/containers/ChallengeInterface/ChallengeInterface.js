@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PlayerStatsContainer from '../PlayerStatsContainer/PlayerStatsContainer';
 import AddNewTrack from '../../components/AddNewTrack/AddNewTrack';
+import TextField from '@material-ui/core/TextField';
 import './ChallengeInterface.css';
 
 class ChallengeInterface extends Component {
@@ -42,7 +43,10 @@ class ChallengeInterface extends Component {
 
   render () {
     return (
-      <div>
+      <div className="challenger-interface-container">
+        <header className="App-header">
+          <h1 className="App-title">My OST Challenge, Your Beats!</h1>
+        </header>
         <div>
           <PlayerStatsContainer
            playlist={this.state.playlist}
@@ -53,6 +57,18 @@ class ChallengeInterface extends Component {
           />
         </div>
         <div className="bottom-row-container">
+          <div className="card scratchwork">
+            <h1>Scratchwork</h1>
+            <div className="add-new-track-input">
+              <TextField label="Put ideas here" multiline margin="normal"/>
+            </div>
+          </div>
+          <div className="card scratchwork">
+            <h1>Scratchwork</h1>
+            <div className="add-new-track-input">
+              <TextField label="Put ideas here" multiline margin="normal"/>
+            </div>
+          </div>
           <AddNewTrack
           playlist={this.state.playlist}
           inputChangeHandler={this.setNewTrackURL}

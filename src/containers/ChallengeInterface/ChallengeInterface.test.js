@@ -3,7 +3,6 @@ import { configure, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import ChallengeInterface from './ChallengeInterface';
 
-
 configure({adapter: new Adapter()});
 
 describe('<ChallengeInterface />', () => {

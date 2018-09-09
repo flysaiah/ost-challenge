@@ -5,7 +5,7 @@ import './AddNewTrack.css';
 
 const addNewTrack = (props) => {
 
-  let newTrackURL = ""
+  let newTrackURL = "";
 
   return (
     <div className="card add-new-track-container">
@@ -14,8 +14,8 @@ const addNewTrack = (props) => {
         <TextField label="Youtube URL" value={props.newTrackURL}
         onChange={props.inputChangeHandler} margin="normal"/>
       </div>
-      <Button
-      variant="contained" color="primary" onClick={props.handleButtonClick}>Add Track</Button>
+      <Button variant="contained" color="primary"
+      onClick={props.handleButtonClick}>Add Track</Button>
     </div>
   );
 }

@@ -1,0 +1,15 @@
+.sidebar {
+  width: 19%;
+  height: 100%;
+  float: left;
+  border-right: 2px solid gray;
+  text-align: center;
+  padding: 5px;
+}
+.sidebar-group-chat {
+  margin-top: 100px;
+  border-style: inset;
+  border-width: medium;
+  border-color: black gray;
+  padding: 5px;
+}

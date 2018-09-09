@@ -10,7 +10,6 @@ const playerStatsContainer = (props) => {
       <div className="player-container">
         <Player playlist={props.playlist}
         currentVideoIndex={props.currentVideoIndex}
-        testt={props.testt}
         playerHidden={props.playerHidden}
         loadNextVideo={props.loadNextVideo}
         />

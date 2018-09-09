@@ -18,7 +18,8 @@ class ChallengeInterface extends Component {
     newTrackURL: "",
     groupName: "",
     groupMembers: [],
-    currentUser: ""
+    currentUser: "",
+    canGuessOptions: {}
   }
 
   componentDidMount() {
@@ -49,12 +50,6 @@ class ChallengeInterface extends Component {
     });
   }
 
-  testt() {
-    this.setState({
-      playerHidden: !this.state.playerHidden
-    });
-  }
-
   loadNextVideo() {
     this.setState({
       currentVideoIndex: this.state.currentVideoIndex + 1
@@ -62,7 +57,17 @@ class ChallengeInterface extends Component {
   }
 
   addTrackToPlaylist = () => {
-    const newPlaylist = [...this.state.playlist, this.state.newTrackURL];
+    const canGuess = [];
+    for (let groupMember of this.state.groupMembers) {
+      if (groupMember.name === this.state.currentUser || this.state.canGuessOptions[groupMember.name]) {
+        canGuess.push(groupMember.name)
+      }
+    }
+    const newTrack = {
+      url: this.state.newTrackURL,
+      canGuess: canGuess
+    }
+    const newPlaylist = [...this.state.playlist, newTrack];
     this.setState({
       playlist: newPlaylist,
       newTrackURL: ""
@@ -91,6 +96,20 @@ class ChallengeInterface extends Component {
     });
   }
 
+  checkboxChange = (memberName) => {
+    const newCanGuessOptions = {
+      ...this.state.canGuessOptions
+    }
+    if (newCanGuessOptions[memberName]) {
+      newCanGuessOptions[memberName] = false;
+    } else {
+      newCanGuessOptions[memberName] = true;
+    }
+    this.setState({
+      canGuessOptions: newCanGuessOptions
+    });
+  }
+
   render () {
     return (
       <div className="challenge-interface-full-container">
@@ -108,7 +127,6 @@ class ChallengeInterface extends Component {
               <PlayerStatsContainer
                playlist={this.state.playlist}
                currentVideoIndex={this.state.currentVideoIndex}
-               testt={this.testt.bind(this)}
                playerHidden={this.state.playerHidden}
                loadNextVideo={this.loadNextVideo.bind(this)}
               />
@@ -128,6 +146,9 @@ class ChallengeInterface extends Component {
               inputChangeHandler={this.setNewTrackURL}
               handleButtonClick={this.addTrackToPlaylist}
               newTrackURL={this.state.newTrackURL}
+              groupMembers={this.state.groupMembers}
+              checkboxChange={this.checkboxChange}
+              canGuessOptions={this.state.canGuessOptions}
               />
             </div>
           </div>

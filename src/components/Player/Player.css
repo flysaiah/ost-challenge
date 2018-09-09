@@ -1,13 +1,15 @@
 .player {
   margin-top: 10px;
 }
-
 .player-hidden {
   height: 0px;
   width: 0px;
 }
-
 .player-regular {
-  height: 288px;
-  width: 384px;
+  height: 230px;
+  width: 307px;
+}
+.player-button {
+  margin-left: 5px !important;
+  margin-right: 5px !important;
 }

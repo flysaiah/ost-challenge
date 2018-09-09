@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Aux from '../../hoc/Aux/Aux';
+import Button from '@material-ui/core/Button';
 import YouTube from 'react-youtube';
 import './Player.css';
 
@@ -14,7 +15,6 @@ class Player extends Component {
   }
 
   play = (event) => {
-    console.log(this.player);
     this.player.playVideo();
   }
 
@@ -36,10 +36,9 @@ class Player extends Component {
     return (
       <Aux>
         <h1>Currently Playing</h1>
-        <button onClick={this.play}>PLAY</button>
-        <button onClick={this.props.testt}>TESTT</button>
-        <button disabled={this.props.currentVideoIndex >= this.props.playlist.length - 1}
-          onClick={this.props.loadNextVideo}>Load Next Video</button>
+        <Button className="player-button" variant="contained" color="primary" onClick={this.play}>PLAY</Button>
+        <Button className="player-button" variant="contained" color="primary" disabled={this.props.currentVideoIndex >= this.props.playlist.length - 1}
+          onClick={this.props.loadNextVideo}>Load Next Video</Button>
         <div className="player">
           <YouTube className={this.props.playerHidden ? "player-hidden" : "player-regular"}
             videoId={currentVideoID}

@@ -1,4 +1,7 @@
-.challenger-interface-container {
+.challenge-interface-full-container {
+  height: 108%;
+}
+.challenge-interface-right-container {
   width: 80%;
   float: left;
 }

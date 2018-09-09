@@ -2,22 +2,17 @@ import React from 'react';
 import './Sidebar.css';
 
 const sidebar = (props) => {
-  // TODO: Get group name / members from DB
-  const groupName = "Goons 98";
-  const data = [{name: "Isaiah"},
-                        {name: "MC"},
-                        {name: "Thomas"}
-                        ];
 
-  const groupMembers = data.map((d) => {
+  const groupMembers = props.groupMembers.map((d) => {
     return (<p key={d.name}>{d.name}</p>)
   })
+  console.log(groupMembers);
 
   return (
     <div className="sidebar">
       <div className="sidebar-group-info">
-        <h1>{groupName}</h1>
-        <p>Current members: 3</p>
+        <h1>{props.groupName}</h1>
+        <p>Current members: {groupMembers.length}</p>
         {groupMembers}
       </div>
       <div className="sidebar-group-chat">

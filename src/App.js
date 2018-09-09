@@ -3,8 +3,7 @@ import ChallengeInterface from './containers/ChallengeInterface/ChallengeInterfa
 import Sidebar from './components/Sidebar/Sidebar';
 import './App.css';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
-import lightBlue from '@material-ui/core/colors/lightBlue';
-
+import Aux from './hoc/Aux/Aux';
 class App extends Component {
 
   render () {
@@ -16,14 +15,15 @@ class App extends Component {
       },
     });
     return (
-      <MuiThemeProvider theme={theme}>
-        <div className="App">
+      <Aux>
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
-
-          <Sidebar />
-          <ChallengeInterface />
-        </div>
-      </MuiThemeProvider>
+        <MuiThemeProvider theme={theme}>
+          <div className="App">
+            <Sidebar />
+            <ChallengeInterface />
+          </div>
+        </MuiThemeProvider>
+      </Aux>
     );
   }
 }

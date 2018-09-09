@@ -5,7 +5,6 @@
     margin-top: 20px;
     display: flex;
     justify-content: space-around;
-    width: 800px;
     margin-left: auto;
     margin-right: auto;
     height: 400px;
@@ -18,5 +17,10 @@
 .stats-container {
   width: 48%;
   border-left: solid 3px gray;
+  text-align: center;
+}
+.bottom-card {
+  width: 300px;
+  height: 250px;
   text-align: center;
 }

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PlayerStatsContainer from '../PlayerStatsContainer/PlayerStatsContainer';
 import AddNewTrack from '../../components/AddNewTrack/AddNewTrack';
+import Guesser from '../../components/Guesser/Guesser';
+import Clock from '../../components/Clock/Clock';
 import TextField from '@material-ui/core/TextField';
 import './ChallengeInterface.css';
 
@@ -47,34 +49,36 @@ class ChallengeInterface extends Component {
         <header className="App-header">
           <h1 className="App-title">My OST Challenge, Your Beats!</h1>
         </header>
-        <div>
-          <PlayerStatsContainer
-           playlist={this.state.playlist}
-           currentVideoIndex={this.state.currentVideoIndex}
-           testt={this.testt.bind(this)}
-           playerHidden={this.state.playerHidden}
-           loadNextVideo={this.loadNextVideo.bind(this)}
-          />
-        </div>
-        <div className="bottom-row-container">
-          <div className="card scratchwork">
-            <h1>Scratchwork</h1>
-            <div className="add-new-track-input">
-              <TextField label="Put ideas here" multiline margin="normal"/>
-            </div>
+        <div className="challenger-interface">
+          <div className="top-row-container">
+            <Clock />
           </div>
-          <div className="card scratchwork">
-            <h1>Scratchwork</h1>
-            <div className="add-new-track-input">
-              <TextField label="Put ideas here" multiline margin="normal"/>
-            </div>
+          <div>
+            <PlayerStatsContainer
+             playlist={this.state.playlist}
+             currentVideoIndex={this.state.currentVideoIndex}
+             testt={this.testt.bind(this)}
+             playerHidden={this.state.playerHidden}
+             loadNextVideo={this.loadNextVideo.bind(this)}
+            />
           </div>
-          <AddNewTrack
-          playlist={this.state.playlist}
-          inputChangeHandler={this.setNewTrackURL}
-          handleButtonClick={this.addTrackToPlaylist}
-          newTrackURL={this.state.newTrackURL}
-          />
+          <div className="bottom-row-container">
+            <Guesser
+              numGuesses={this.state.numGuesses}
+            />
+            <div className="card bottom-card">
+              <h1>Scratchwork</h1>
+              <div className="add-new-track-input">
+                <TextField label="Put ideas here" multiline margin="normal"/>
+              </div>
+            </div>
+            <AddNewTrack
+            playlist={this.state.playlist}
+            inputChangeHandler={this.setNewTrackURL}
+            handleButtonClick={this.addTrackToPlaylist}
+            newTrackURL={this.state.newTrackURL}
+            />
+          </div>
         </div>
       </div>
     );

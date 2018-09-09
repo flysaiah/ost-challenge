@@ -75,10 +75,27 @@ class ChallengeInterface extends Component {
     })
   }
 
+  disbandGroup = (event) => {
+    const body = {
+      groupName: this.state.groupName
+    }
+    axios.post('http://localhost:3131/api/disbandGroup', body).then(res => {
+      if (res.data.success) {
+        localStorage.setItem("ost-challenge-group-name", "");
+        localStorage.setItem("ost-challenge-current-user", "");
+        this.props.history.push("/joinGroup");
+      } else {
+        // TODO: Toast
+        console.log(res);
+      }
+    });
+  }
+
   render () {
     return (
       <div className="challenge-interface-full-container">
-        <Sidebar groupName={this.state.groupName} groupMembers={this.state.groupMembers} />
+        <Sidebar groupName={this.state.groupName} groupMembers={this.state.groupMembers}
+        handleButtonClick={this.disbandGroup} />
         <div className="challenge-interface-right-container">
           <header className="App-header">
             <h1 className="App-title">My OST Challenge, Your Beats!</h1>

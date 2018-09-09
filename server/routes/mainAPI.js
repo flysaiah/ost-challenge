@@ -47,5 +47,23 @@ module.exports = (router) => {
     });
   });
 
+  router.post('/disbandGroup', (req, res) => {
+    Session.findOne({ groupName: req.body.groupName }, (err, session) => {
+      if (err) {
+        res.json({ success: false, message: err });
+      } else if (!session) {
+        res.json({ success: false, message: "Group not found" });
+      } else {
+        session.remove(err => {
+          if (err) {
+            res.json({ success: false, message: err });
+          } else {
+            res.json({ success: true, groupName: session.groupName });
+          }
+        });
+      }
+    });
+  });
+
   return router;
 }

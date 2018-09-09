@@ -1,17 +1,20 @@
 .App {
-  font-family: "Roboto";
   height: 100%;
 }
 h1 {
   color: #3d3d3d;
 }
 .App-header {
-  background-color: #222;
-  padding: 20px;
+  background-color: #00b0ff;
+  padding-left: 50px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   color: white;
 }
 .App-title {
   color: white;
+  font-size: 50px;
+  font-style: italic;
 }
 .card {
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);

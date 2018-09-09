@@ -7,13 +7,13 @@ const clock = (props) => {
   return (
     <div className="card clock-card">
       <p>London time:
-        <div className="clock-container">
+        <span className="clock-container">
           <Clock
             format={'h:mm:ss A'}
             ticking={true}
             timezone={'Europe/London'}
           />
-        </div>
+        </span>
       </p>
     </div>
   );

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PlayerStatsContainer from '../PlayerStatsContainer/PlayerStatsContainer';
 import AddNewTrack from '../../components/AddNewTrack/AddNewTrack';
 import Guesser from '../../components/Guesser/Guesser';
+import axios from 'axios';
 import Clock from '../../components/Clock/Clock';
 import TextField from '@material-ui/core/TextField';
 import './ChallengeInterface.css';
@@ -9,12 +10,24 @@ import './ChallengeInterface.css';
 class ChallengeInterface extends Component {
 
   state = {
-    playlist: ["https://www.youtube.com/watch?v=MvHK2OWkCFg",
-              "https://www.youtube.com/watch?v=CwXXsSg4p-s"],
+    playlist: [],
     currentVideoIndex: 0,
     playerHidden: false,
     numGuesses: 3,
     newTrackURL: ""
+  }
+
+  componentDidMount() {
+    axios.post('http://localhost:3131/api/fetchSessionData', {}).then(res => {
+      if (res.data.success) {
+        this.setState({
+          playlist: res.data.session.playlist
+        });
+      } else {
+        // TODO: Toast
+        console.log(res);
+      }
+    });
   }
 
   testt() {

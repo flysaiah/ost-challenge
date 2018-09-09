@@ -19,8 +19,6 @@ class Player extends Component {
   }
 
   render() {
-    // console.log("--PLAYLIST--");
-    // console.log(this.props.playlist);
 
     const opts = {
       playerVars: { // https://developers.google.com/youtube/player_parameters
@@ -31,7 +29,7 @@ class Player extends Component {
       }
     };
 
-    const currentVideoID = this.props.playlist[this.props.currentVideoIndex].split("v=")[1];
+    const currentVideoID = this.props.currentVideoIndex < this.props.playlist.length ? this.props.playlist[this.props.currentVideoIndex].url.split("v=")[1] : "";
 
     const placeholder = this.props.playerHidden ? (<p>Guess the track to see what this is!</p>) : null
 

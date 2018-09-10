@@ -19,6 +19,7 @@ module.exports = (router) => {
   router.post('/createGroup', (req, res) => {
     let newSession = new Session({
       groupName: req.body.groupName,
+      groupAdmin: req.body.newUser,
       groupPassword: req.body.groupPassword,
       members: [{ name: req.body.newUser, numCorrect: 0, numIncorrect: 0 }],
       playlist: [],
@@ -43,6 +44,30 @@ module.exports = (router) => {
         res.json({ success: false, message: "Group not found" });
       } else {
         res.json({ success: true, groupName: session.groupName });
+      }
+    });
+  });
+
+  router.post('/setNewPlaylistIndex', (req, res) => {
+    Session.findOneAndUpdate({ groupName: req.body.groupName }, { $set: { currentPlaylistIndex: req.body.currentPlaylistIndex } }, { new: true }, (err, session) => {
+      if (err) {
+        res.json({ success: false, message: err });
+      } else if (!session) {
+        res.json({ success: false, message: "Group not found" });
+      } else {
+        res.json({ success: true, playlist: session.playlist });
+      }
+    });
+  });
+
+  router.post('/addVideoToPlaylist', (req, res) => {
+    Session.findOneAndUpdate({ groupName: req.body.groupName }, { $push: { playlist: req.body.newTrack } }, { new: true }, (err, session) => {
+      if (err) {
+        res.json({ success: false, message: err });
+      } else if (!session) {
+        res.json({ success: false, message: "Group not found" });
+      } else {
+        res.json({ success: true, playlist: session.playlist });
       }
     });
   });

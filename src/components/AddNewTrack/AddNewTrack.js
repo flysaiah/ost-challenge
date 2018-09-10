@@ -8,7 +8,14 @@ import './AddNewTrack.css';
 
 const addNewTrack = (props) => {
 
-  const checkboxes = props.groupMembers.map((member) => {
+  const guessingMembers = [];
+  for (let member of props.groupMembers) {
+    if (member.name !== props.currentUser) {
+      guessingMembers.push(member);
+    }
+  }
+
+  const checkboxes = guessingMembers.map((member) => {
     return (<FormControlLabel
         control={
           <Checkbox
@@ -39,6 +46,7 @@ const addNewTrack = (props) => {
           </FormGroup>
         </div>
       </div>
+      <br/>
       <Button variant="contained" color="primary" disabled={!props.newTrackURL}
       onClick={props.handleButtonClick}>Add Track</Button>
     </div>

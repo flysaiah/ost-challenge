@@ -12,17 +12,22 @@ class ChallengeInterface extends Component {
 
   state = {
     playlist: [],
-    currentVideoIndex: 0,
+    currentPlaylistIndex: 0,
     playerHidden: false,
     numGuesses: 3,
     newTrackURL: "",
     groupName: "",
+    groupAdmin: "",
     groupMembers: [],
     currentUser: "",
     canGuessOptions: {}
   }
 
   componentDidMount() {
+    this.refresh();
+  }
+
+  refresh = (event) => {
     const groupName = localStorage.getItem("ost-challenge-group-name");
     const currentUser = localStorage.getItem("ost-challenge-current-user");
     if (!groupName || !currentUser) {
@@ -34,9 +39,11 @@ class ChallengeInterface extends Component {
         console.log(res.data);
         this.setState({
           groupName: groupName,
+          groupAdmin: res.data.session.groupAdmin,
           groupMembers: res.data.session.members,
           currentUser: currentUser,
           playlist: res.data.session.playlist,
+          currentPlaylistIndex: res.data.session.currentPlaylistIndex
         });
       } else if (res.data.message === "Group not found") {
         localStorage.setItem("ost-challenge-group-name", "")
@@ -51,26 +58,68 @@ class ChallengeInterface extends Component {
   }
 
   loadNextVideo() {
-    this.setState({
-      currentVideoIndex: this.state.currentVideoIndex + 1
-    })
+    const newPlaylistIndex = this.state.currentPlaylistIndex + 1;
+    axios.post('http://localhost:3131/api/setnewPlaylistIndex', { groupName: this.state.groupName, currentPlaylistIndex: newPlaylistIndex }).then(res => {
+      if (res.data.success) {
+        const newPlaylist = res.data.playlist;
+        const nextVideo = newPlaylist[newPlaylistIndex];
+        let playerHidden = true;
+        if (nextVideo.owner === this.state.currentUser) {
+          playerHidden = false;
+        } else if (nextVideo.canGuess) {
+          for (let member of nextVideo.canGuess) {
+            if (member === this.state.currentUser) {
+              playerHidden = false;
+              break;
+            }
+          }
+        }
+        this.setState({
+          currentPlaylistIndex: newPlaylistIndex,
+          playlist: res.data.playlist,
+          playerHidden: playerHidden
+        });
+      } else if (res.data.message === "Group not found") {
+        localStorage.setItem("ost-challenge-group-name", "")
+        localStorage.setItem("ost-challenge-current-user", "")
+        this.props.history.push('/joinGroup');
+        return;
+      } else {
+        // TODO: Toast
+        console.log(res);
+      }
+    });
   }
 
   addTrackToPlaylist = () => {
     const canGuess = [];
     for (let groupMember of this.state.groupMembers) {
-      if (groupMember.name === this.state.currentUser || this.state.canGuessOptions[groupMember.name]) {
+      if (this.state.canGuessOptions[groupMember.name]) {
         canGuess.push(groupMember.name)
       }
     }
     const newTrack = {
       url: this.state.newTrackURL,
-      canGuess: canGuess
+      canGuess: canGuess,
+      owner: this.state.currentUser
     }
-    const newPlaylist = [...this.state.playlist, newTrack];
-    this.setState({
-      playlist: newPlaylist,
-      newTrackURL: ""
+
+    axios.post('http://localhost:3131/api/addVideoToPlaylist', { groupName: this.state.groupName, newTrack: newTrack }).then(res => {
+      if (res.data.success) {
+        console.log(res.data);
+        this.setState({
+          playlist: res.data.playlist,
+          newTrackURL: ""
+        });
+      } else if (res.data.message === "Group not found") {
+        localStorage.setItem("ost-challenge-group-name", "")
+        localStorage.setItem("ost-challenge-current-user", "")
+        this.props.history.push('/joinGroup');
+        return;
+      } else {
+        // TODO: Toast
+        console.log(res);
+      }
     });
   }
 
@@ -126,9 +175,11 @@ class ChallengeInterface extends Component {
             <div>
               <PlayerStatsContainer
                playlist={this.state.playlist}
-               currentVideoIndex={this.state.currentVideoIndex}
+               currentPlaylistIndex={this.state.currentPlaylistIndex}
                playerHidden={this.state.playerHidden}
                loadNextVideo={this.loadNextVideo.bind(this)}
+               refresh={this.refresh}
+               isAdmin={this.state.currentUser === this.state.groupAdmin}
               />
             </div>
             <div className="bottom-row-container">
@@ -149,6 +200,7 @@ class ChallengeInterface extends Component {
               groupMembers={this.state.groupMembers}
               checkboxChange={this.checkboxChange}
               canGuessOptions={this.state.canGuessOptions}
+              currentUser={this.state.currentUser}
               />
             </div>
           </div>

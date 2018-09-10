@@ -29,18 +29,27 @@ class Player extends Component {
       }
     };
 
-    const currentVideoID = this.props.currentVideoIndex < this.props.playlist.length ? this.props.playlist[this.props.currentVideoIndex].url.split("v=")[1] : "";
-
-    const placeholder = this.props.playerHidden ? (<p>Guess the track to see what this is!</p>) : null
-
+    const currentVideoID = this.props.currentPlaylistIndex < this.props.playlist.length ? this.props.playlist[this.props.currentPlaylistIndex].url.split("v=")[1].split("&")[0] : "";
+    const placeholder = this.props.playlist.length ? (this.props.playerHidden ? (<p>Guess the track to see what this is!</p>) : null) : (<p>Add a track to get started!</p>)
+    let loadNextButton = (
+      <Button className="player-button" variant="contained" color="primary"
+        onClick={this.props.refresh}>Refresh</Button>
+    )
+    if (this.props.isAdmin) {
+      loadNextButton = (
+        <Button className="player-button" variant="contained" color="primary"
+         disabled={this.props.currentPlaylistIndex >= this.props.playlist.length - 1}
+          onClick={this.props.loadNextVideo}>Load Next Video</Button>
+      )
+    }
     return (
       <Aux>
         <h1>Currently Playing</h1>
-        <Button className="player-button" variant="contained" color="primary" onClick={this.play}>PLAY</Button>
-        <Button className="player-button" variant="contained" color="primary" disabled={this.props.currentVideoIndex >= this.props.playlist.length - 1}
-          onClick={this.props.loadNextVideo}>Load Next Video</Button>
+        <Button className="player-button" variant="contained" color="primary"
+         disabled={!this.props.playlist.length} onClick={this.play}>PLAY</Button>
+        {loadNextButton}
         <div className="player">
-          <YouTube className={this.props.playerHidden ? "player-hidden" : "player-regular"}
+          <YouTube className={!this.props.playlist.length || this.props.playerHidden ? "player-hidden" : "player-regular"}
             videoId={currentVideoID}
             opts={opts}
             onReady={this.capturePlayer}

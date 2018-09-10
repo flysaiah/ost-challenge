@@ -9,9 +9,11 @@ const playerStatsContainer = (props) => {
     <div className="card player-stats-container">
       <div className="player-container">
         <Player playlist={props.playlist}
-        currentVideoIndex={props.currentVideoIndex}
+        currentPlaylistIndex={props.currentPlaylistIndex}
         playerHidden={props.playerHidden}
         loadNextVideo={props.loadNextVideo}
+        isAdmin={props.isAdmin}
+        refresh={props.refresh}
         />
       </div>
       <div className="stats-container">

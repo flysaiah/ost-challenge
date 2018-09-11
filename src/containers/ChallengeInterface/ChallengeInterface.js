@@ -56,6 +56,9 @@ class ChallengeInterface extends Component {
             newGuess = member.newGuess
             numGuesses = member.numGuesses
             waitingOnEval = member.waitingOnEval;
+            if (member.guessStatus === 3) {
+              playerHidden = false;
+            }
           }
         }
         this.setState({

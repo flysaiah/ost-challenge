@@ -7,6 +7,7 @@ import './Guesser.css'
 const guesser = (props) => {
 
   let guessInterface = null;
+  console.log(props);
 
   if (props.currentVideo && props.currentUser === props.currentVideo.owner) {
     // Confirm/deny guesses
@@ -42,21 +43,28 @@ const guesser = (props) => {
       <p>Waiting on evaluation of your guess!</p>
     );
 
-    if (!props.waitingOnEval && props.guessStatus == 1) {
+    if (!props.waitingOnEval && props.guessStatus == 1 && !props.cannotGuess) {
       guessInput = (
         <Aux>
           <div className="add-new-track-input">
             <TextField label="Write guess here" value={props.newGuess}
             onChange={props.inputChangeHandler} margin="normal"/>
           </div>
-          <Button variant="contained" color="primary" disabled={!props.newGuess}
+          <Button variant="contained" color="primary" disabled={!props.newGuess || props.numGuesses <= 0}
           onClick={props.handleButtonClick}>Make Guess</Button>
         </Aux>
       )
     } else if (!props.waitingOnEval && props.guessStatus == 2) {
       guessInput = (
         <Aux>
-          You were incorrect.
+          <p>You were incorrect.</p>
+          <br/>
+          <div className="add-new-track-input">
+            <TextField label="Write guess here" value={props.newGuess}
+            onChange={props.inputChangeHandler} margin="normal"/>
+          </div>
+          <Button variant="contained" color="primary" disabled={!props.newGuess || props.numGuesses <= 0}
+          onClick={props.handleButtonClick}>Make Guess</Button>
         </Aux>
       )
     } else if (!props.waitingOnEval && props.guessStatus == 3) {

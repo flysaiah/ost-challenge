@@ -1,0 +1,10 @@
+.guess-container {
+  margin-top: 10px;
+}
+.guess-buttons-container {
+  margin-top: 10px;
+}
+.guess-button {
+  margin-left: 5px !important;
+  margin-right: 5px !important;
+}

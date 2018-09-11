@@ -29,7 +29,7 @@ const addNewTrack = (props) => {
         labelPlacement="start"
         key={member.name}
       />)
-  })
+  });
 
   return (
     <div className="card bottom-card">

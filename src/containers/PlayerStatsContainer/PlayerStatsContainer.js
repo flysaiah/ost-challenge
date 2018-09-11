@@ -14,6 +14,7 @@ const playerStatsContainer = (props) => {
         loadNextVideo={props.loadNextVideo}
         isAdmin={props.isAdmin}
         refresh={props.refresh}
+        cannotGuess={props.cannotGuess}
         />
       </div>
       <div className="stats-container">

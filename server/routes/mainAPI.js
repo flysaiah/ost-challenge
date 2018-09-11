@@ -17,16 +17,16 @@ module.exports = (router) => {
   });
 
   router.post('/createGroup', (req, res) => {
-    let newSession = new Session({
+    let session = new Session({
       groupName: req.body.groupName,
       groupAdmin: req.body.newUser,
       groupPassword: req.body.groupPassword,
-      members: [{ name: req.body.newUser, numCorrect: 0, numIncorrect: 0 }],
+      members: [{ name: req.body.newUser, numCorrect: 0, numIncorrect: 0, newGuess: "", waitingOnEval: false, numGuesses: 3, guessStatus: 1 }],
       playlist: [],
       currentPlaylistIndex: 0,
       created: new Date()
     })
-    newSession.save((err) => {
+    session.save((err) => {
       if (err) {
         res.json({ success: false, message: err });
       } else {
@@ -36,7 +36,7 @@ module.exports = (router) => {
   });
 
   router.post('/joinGroup', (req, res) => {
-    const newMember = { name: req.body.newUser, numCorrect: 0, numIncorrect: 0 }
+    const newMember = { name: req.body.newUser, numCorrect: 0, numIncorrect: 0, newGuess: "", waitingOnEval: false, numGuesses: 3, guessStatus: 1 }
     Session.findOneAndUpdate({ groupPassword: req.body.groupPassword }, { $push: { members: newMember } }, (err, session) => {
       if (err) {
         res.json({ success: false, message: err });
@@ -49,13 +49,80 @@ module.exports = (router) => {
   });
 
   router.post('/setNewPlaylistIndex', (req, res) => {
-    Session.findOneAndUpdate({ groupName: req.body.groupName }, { $set: { currentPlaylistIndex: req.body.currentPlaylistIndex } }, { new: true }, (err, session) => {
+    Session.findOne({ groupName: req.body.groupName }, (err, session) => {
       if (err) {
         res.json({ success: false, message: err });
       } else if (!session) {
         res.json({ success: false, message: "Group not found" });
       } else {
-        res.json({ success: true, playlist: session.playlist });
+        for (let groupMember of session.members) {
+          groupMember.numGuesses = 3;
+          groupMember.newGuess = "";
+          groupMember.guessStatus = 1;
+          groupMember.waitingOnEval = false;
+        }
+        Session.findOneAndUpdate({ groupName: req.body.groupName }, { $set: { members: session.members, currentPlaylistIndex: req.body.currentPlaylistIndex } }, (err, session) => {
+          if (err) {
+            res.json({ success: false, message: err });
+          } else if (!session) {
+            res.json({ success: false, message: "Group not found" });
+          } else {
+            res.json({ success: true });
+          }
+        });
+      }
+    });
+  });
+
+  router.post('/makeGuess', (req, res) => {
+    Session.findOne({ groupName: req.body.groupName }, (err, session) => {
+      if (err) {
+        res.json({ success: false, message: err });
+      } else if (!session) {
+        res.json({ success: false, message: "Group not found" });
+      } else {
+        for (let groupMember of session.members) {
+          if (groupMember.name === req.body.name) {
+            groupMember.newGuess = req.body.newGuess;
+            groupMember.waitingOnEval = true;
+            groupMember.numGuesses -= 1;
+          }
+        }
+        Session.findOneAndUpdate({ groupName: req.body.groupName }, { $set: { members: session.members } }, (err, session) => {
+          if (err) {
+            res.json({ success: false, message: err });
+          } else if (!session) {
+            res.json({ success: false, message: "Group not found" });
+          } else {
+            res.json({ success: true });
+          }
+        });
+      }
+    });
+  });
+
+  router.post('/evaluateGuess', (req, res) => {
+    Session.findOne({ groupName: req.body.groupName }, (err, session) => {
+      if (err) {
+        res.json({ success: false, message: err });
+      } else if (!session) {
+        res.json({ success: false, message: "Group not found" });
+      } else {
+        for (let groupMember of session.members) {
+          if (groupMember.name === req.body.memberName) {
+            groupMember.waitingOnEval = false;
+            groupMember.guessStatus = req.body.guessStatus;
+          }
+        }
+        Session.findOneAndUpdate({ groupName: req.body.groupName }, { $set: { members: session.members } }, (err, session) => {
+          if (err) {
+            res.json({ success: false, message: err });
+          } else if (!session) {
+            res.json({ success: false, message: "Group not found" });
+          } else {
+            res.json({ success: true });
+          }
+        });
       }
     });
   });

@@ -18,6 +18,10 @@ class Player extends Component {
     this.player.playVideo();
   }
 
+  pause = (event) => {
+    this.player.pauseVideo();
+  }
+
   render() {
 
     const opts = {
@@ -28,13 +32,16 @@ class Player extends Component {
         iv_load_policy: 3,
       }
     };
-
     const currentVideoID = this.props.currentPlaylistIndex < this.props.playlist.length ? this.props.playlist[this.props.currentPlaylistIndex].url.split("v=")[1].split("&")[0] : "";
-    const placeholder = this.props.playlist.length ? (this.props.playerHidden ? (<p>Guess the track to see what this is!</p>) : null) : (<p>Add a track to get started!</p>)
-    let loadNextButton = (
-      <Button className="player-button" variant="contained" color="primary"
-        onClick={this.props.refresh}>Refresh</Button>
-    )
+    let placeholder = null;
+     if (this.props.playlist.length && this.props.cannotGuess) {
+       placeholder = (<p>Sit back and relax! This one isn't for you.</p>);
+     } else if (!this.props.playlist.length) {
+       placeholder = (<p>Add a track to get started!</p>);
+     } else if (this.props.playerHidden) {
+       placeholder = (<p>Guess the track to see what this is!</p>);
+     }
+    let loadNextButton = null
     if (this.props.isAdmin) {
       loadNextButton = (
         <Button className="player-button" variant="contained" color="primary"
@@ -47,7 +54,11 @@ class Player extends Component {
         <h1>Currently Playing</h1>
         <Button className="player-button" variant="contained" color="primary"
          disabled={!this.props.playlist.length} onClick={this.play}>PLAY</Button>
+        <Button className="player-button" variant="contained" color="primary"
+         disabled={!this.props.playlist.length} onClick={this.pause}>PAUSE</Button>
         {loadNextButton}
+        <Button className="player-button" variant="contained" color="primary"
+          onClick={this.props.refresh}>Refresh</Button>
         <div className="player">
           <YouTube className={!this.props.playlist.length || this.props.playerHidden ? "player-hidden" : "player-regular"}
             videoId={currentVideoID}

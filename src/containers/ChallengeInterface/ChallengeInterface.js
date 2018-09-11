@@ -15,12 +15,14 @@ class ChallengeInterface extends Component {
     currentPlaylistIndex: 0,
     playerHidden: false,
     numGuesses: 3,
+    newGuess: "",
     newTrackURL: "",
     groupName: "",
     groupAdmin: "",
     groupMembers: [],
     currentUser: "",
-    canGuessOptions: {}
+    canGuessOptions: {},
+    waitingOnEval: false
   }
 
   componentDidMount() {
@@ -37,13 +39,36 @@ class ChallengeInterface extends Component {
     axios.post('http://localhost:3131/api/fetchSessionData', { groupName: groupName }).then(res => {
       if (res.data.success) {
         console.log(res.data);
+        let playerHidden = true;
+        if (res.data.session.playlist.length) {
+          const nextVideo = res.data.session.playlist[res.data.session.currentPlaylistIndex];
+          console.log(nextVideo);
+          console.log(res.data.session);
+          if (nextVideo.owner === currentUser) {
+            playerHidden = false;
+          }
+        }
+        let newGuess = "";
+        let waitingOnEval = false;
+        let numGuesses = 3;
+        for (let member of res.data.session.members) {
+          if (member.name === currentUser) {
+            newGuess = member.newGuess
+            numGuesses = member.numGuesses
+            waitingOnEval = member.waitingOnEval;
+          }
+        }
         this.setState({
           groupName: groupName,
           groupAdmin: res.data.session.groupAdmin,
           groupMembers: res.data.session.members,
           currentUser: currentUser,
           playlist: res.data.session.playlist,
-          currentPlaylistIndex: res.data.session.currentPlaylistIndex
+          currentPlaylistIndex: res.data.session.currentPlaylistIndex,
+          playerHidden: playerHidden,
+          newGuess: newGuess,
+          waitingOnEval: waitingOnEval,
+          numGuesses: numGuesses
         });
       } else if (res.data.message === "Group not found") {
         localStorage.setItem("ost-challenge-group-name", "")
@@ -61,24 +86,7 @@ class ChallengeInterface extends Component {
     const newPlaylistIndex = this.state.currentPlaylistIndex + 1;
     axios.post('http://localhost:3131/api/setnewPlaylistIndex', { groupName: this.state.groupName, currentPlaylistIndex: newPlaylistIndex }).then(res => {
       if (res.data.success) {
-        const newPlaylist = res.data.playlist;
-        const nextVideo = newPlaylist[newPlaylistIndex];
-        let playerHidden = true;
-        if (nextVideo.owner === this.state.currentUser) {
-          playerHidden = false;
-        } else if (nextVideo.canGuess) {
-          for (let member of nextVideo.canGuess) {
-            if (member === this.state.currentUser) {
-              playerHidden = false;
-              break;
-            }
-          }
-        }
-        this.setState({
-          currentPlaylistIndex: newPlaylistIndex,
-          playlist: res.data.playlist,
-          playerHidden: playerHidden
-        });
+        this.refresh();
       } else if (res.data.message === "Group not found") {
         localStorage.setItem("ost-challenge-group-name", "")
         localStorage.setItem("ost-challenge-current-user", "")
@@ -145,6 +153,52 @@ class ChallengeInterface extends Component {
     });
   }
 
+  acceptGuess = (memberName) => {
+    const body = { groupName: this.state.groupName, memberName: memberName, guessStatus: 3 }
+    axios.post('http://localhost:3131/api/evaluateGuess', body).then(res => {
+      if (res.data.success) {
+        this.refresh();
+      } else {
+        // TODO: Toast
+        console.log(res);
+      }
+    });
+  }
+
+  rejectGuess = (memberName) => {
+    const body = { groupName: this.state.groupName, memberName: memberName, guessStatus: 2 }
+    axios.post('http://localhost:3131/api/evaluateGuess', body).then(res => {
+      if (res.data.success) {
+        this.refresh();
+      } else {
+        // TODO: Toast
+        console.log(res);
+      }
+    });
+  }
+
+  makeGuess = (event) => {
+    axios.post('http://localhost:3131/api/makeGuess', { groupName: this.state.groupName, newGuess: this.state.newGuess, name: this.state.currentUser }).then(res => {
+      if (res.data.success) {
+        this.refresh();
+      } else if (res.data.message === "Group not found") {
+        localStorage.setItem("ost-challenge-group-name", "")
+        localStorage.setItem("ost-challenge-current-user", "")
+        this.props.history.push('/joinGroup');
+        return;
+      } else {
+        // TODO: Toast
+        console.log(res);
+      }
+    });
+  }
+
+  changeGuess = (event) => {
+    this.setState({
+      newGuess: event.target.value
+    });
+  }
+
   checkboxChange = (memberName) => {
     const newCanGuessOptions = {
       ...this.state.canGuessOptions
@@ -160,6 +214,25 @@ class ChallengeInterface extends Component {
   }
 
   render () {
+    let cannotGuess = true;
+    if (this.state.playlist.length) {
+      if (this.state.playlist[this.state.currentPlaylistIndex].owner === this.state.currentUser) {
+        cannotGuess = false;
+      } else {
+        for (let member of this.state.playlist[this.state.currentPlaylistIndex].canGuess) {
+          if (member === this.state.currentUser) {
+            cannotGuess = false;
+            break;
+          }
+        }
+      }
+    }
+    let guessStatus;
+    for (let member of this.state.groupMembers) {
+      if (member.name === this.state.currentUser) {
+        guessStatus = member.guessStatus;
+      }
+    }
     return (
       <div className="challenge-interface-full-container">
         <Sidebar groupName={this.state.groupName} groupMembers={this.state.groupMembers}
@@ -180,11 +253,23 @@ class ChallengeInterface extends Component {
                loadNextVideo={this.loadNextVideo.bind(this)}
                refresh={this.refresh}
                isAdmin={this.state.currentUser === this.state.groupAdmin}
+               cannotGuess={cannotGuess}
               />
             </div>
             <div className="bottom-row-container">
               <Guesser
                 numGuesses={this.state.numGuesses}
+                groupMembers={this.state.groupMembers}
+                currentVideo={this.state.playlist.length ? this.state.playlist[this.state.currentPlaylistIndex] : null}
+                currentUser={this.state.currentUser}
+                newGuess={this.state.newGuess}
+                inputChangeHandler={this.changeGuess}
+                handleButtonClick={this.makeGuess}
+                acceptGuess={this.acceptGuess}
+                rejectGuess={this.rejectGuess}
+                waitingOnEval={this.state.waitingOnEval}
+                cannotGuess={cannotGuess}
+                guessStatus={guessStatus}
               />
               <div className="card bottom-card">
                 <h1>Scratchwork</h1>

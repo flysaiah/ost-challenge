@@ -7,7 +7,7 @@ const stats = (props) => {
   return (
     <Aux>
       <h1>Stats</h1>
-      <p> Example stats</p>
+      <p>Stats coming soon!</p>
     </Aux>
   );
 }

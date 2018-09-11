@@ -7,7 +7,6 @@ import './Guesser.css'
 const guesser = (props) => {
 
   let guessInterface = null;
-  console.log(props);
 
   if (props.currentVideo && props.currentUser === props.currentVideo.owner) {
     // Confirm/deny guesses
@@ -43,7 +42,7 @@ const guesser = (props) => {
       <p>Waiting on evaluation of your guess!</p>
     );
 
-    if (!props.waitingOnEval && props.guessStatus == 1 && !props.cannotGuess) {
+    if (!props.waitingOnEval && props.guessStatus === 1 && !props.cannotGuess) {
       guessInput = (
         <Aux>
           <div className="add-new-track-input">
@@ -54,7 +53,7 @@ const guesser = (props) => {
           onClick={props.handleButtonClick}>Make Guess</Button>
         </Aux>
       )
-    } else if (!props.waitingOnEval && props.guessStatus == 2) {
+    } else if (!props.waitingOnEval && props.guessStatus === 2) {
       guessInput = (
         <Aux>
           <p>You were incorrect.</p>
@@ -67,7 +66,7 @@ const guesser = (props) => {
           onClick={props.handleButtonClick}>Make Guess</Button>
         </Aux>
       )
-    } else if (!props.waitingOnEval && props.guessStatus == 3) {
+    } else if (!props.waitingOnEval && props.guessStatus === 3) {
       guessInput = (
         <Aux>
           You were correct!

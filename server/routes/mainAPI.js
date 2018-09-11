@@ -55,7 +55,26 @@ module.exports = (router) => {
       } else if (!session) {
         res.json({ success: false, message: "Group not found" });
       } else {
+        console.log("---HERE---");
+        console.log(session);
         for (let groupMember of session.members) {
+          if (session.playlist.length) {
+            // Update numCorrect/numIncorrect for each member
+            let shouldEval = false;
+              for (let member of session.playlist[session.currentPlaylistIndex].canGuess) {
+                if (member === groupMember.name) {
+                  shouldEval = true;
+                  break;
+                }
+              }
+            if (shouldEval) {
+              if (groupMember.guessStatus === 3) {
+                groupMember.numCorrect += 1;
+              } else {
+                groupMember.numIncorrect += 1;
+              }
+            }
+          }
           groupMember.numGuesses = 3;
           groupMember.newGuess = "";
           groupMember.guessStatus = 1;

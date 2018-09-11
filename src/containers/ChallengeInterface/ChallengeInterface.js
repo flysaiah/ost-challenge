@@ -257,6 +257,7 @@ class ChallengeInterface extends Component {
                refresh={this.refresh}
                isAdmin={this.state.currentUser === this.state.groupAdmin}
                cannotGuess={cannotGuess}
+               groupMembers={this.state.groupMembers}
               />
             </div>
             <div className="bottom-row-container">

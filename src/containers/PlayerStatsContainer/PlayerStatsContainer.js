@@ -18,7 +18,9 @@ const playerStatsContainer = (props) => {
         />
       </div>
       <div className="stats-container">
-        <Stats />
+        <Stats
+        groupMembers={props.groupMembers}
+         />
       </div>
     </div>
   );

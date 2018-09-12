@@ -25,16 +25,20 @@ class ChallengeInterface extends Component {
     waitingOnEval: false
   }
 
+  interval = null;
+
   componentDidMount() {
     this.refresh();
-    setInterval(this.refresh, 2000);
+    this.interval = setInterval(this.refresh, 2000);
   }
 
   refresh = (event) => {
+    console.log("YAY");
     const groupName = localStorage.getItem("ost-challenge-group-name");
     const currentUser = localStorage.getItem("ost-challenge-current-user");
     if (!groupName || !currentUser) {
       this.props.history.push('/joinGroup');
+        clearInterval(this.interval);
       return;
     }
     axios.post('http://localhost:3131/api/fetchSessionData', { groupName: groupName }).then(res => {
@@ -71,6 +75,7 @@ class ChallengeInterface extends Component {
         });
       } else if (res.data.message === "Group not found") {
         this.props.history.push('/joinGroup');
+        clearInterval(this.interval);
         return;
       } else {
         // TODO: Toast
@@ -89,6 +94,7 @@ class ChallengeInterface extends Component {
         this.refresh();
       } else if (res.data.message === "Group not found") {
         this.props.history.push('/joinGroup');
+        clearInterval(this.interval);
         return;
       } else {
         // TODO: Toast
@@ -119,6 +125,7 @@ class ChallengeInterface extends Component {
         });
       } else if (res.data.message === "Group not found") {
         this.props.history.push('/joinGroup');
+        clearInterval(this.interval);
         return;
       } else {
         // TODO: Toast
@@ -144,6 +151,7 @@ class ChallengeInterface extends Component {
         localStorage.setItem("ost-challenge-group-name", "");
         localStorage.setItem("ost-challenge-current-user", "");
         this.props.history.push("/joinGroup");
+        clearInterval(this.interval);
       } else {
         // TODO: Toast
         console.log(res);
@@ -183,6 +191,7 @@ class ChallengeInterface extends Component {
         localStorage.setItem("ost-challenge-group-name", "")
         localStorage.setItem("ost-challenge-current-user", "")
         this.props.history.push('/joinGroup');
+        clearInterval(this.interval);
         return;
       } else {
         // TODO: Toast

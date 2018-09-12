@@ -36,7 +36,6 @@ class ChallengeInterface extends Component {
   }
 
   refresh = (event) => {
-    console.log("YAY");
     const groupName = localStorage.getItem("ost-challenge-group-name");
     const currentUser = localStorage.getItem("ost-challenge-current-user");
     if (!groupName || !currentUser) {
@@ -46,7 +45,6 @@ class ChallengeInterface extends Component {
     }
     axios.post('/api/fetchSessionData', { groupName: groupName }).then(res => {
       if (res.data.success) {
-        console.log(res.data);
         let playerHidden = true;
         if (res.data.session.playlist.length) {
           const nextVideo = res.data.session.playlist[res.data.session.currentPlaylistIndex];
@@ -86,9 +84,6 @@ class ChallengeInterface extends Component {
       }
     }).catch(error => {
       console.log(error);
-      console.log(error.response);
-      console.log(error.response.status);
-      console.log(":()")
     });
   }
 
@@ -123,7 +118,6 @@ class ChallengeInterface extends Component {
 
     axios.post('/api/addVideoToPlaylist', { groupName: this.state.groupName, newTrack: newTrack }).then(res => {
       if (res.data.success) {
-        console.log(res.data);
         this.setState({
           playlist: res.data.playlist,
           newTrackURL: ""

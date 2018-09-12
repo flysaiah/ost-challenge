@@ -20,8 +20,11 @@
     "react-youtube": "^7.6.0",
     "serve": "^10.0.0"
   },
+  "proxy": "http://localhost:3131",
   "scripts": {
-    "start": "node server.js",
-    "heroku-postbuild": "cd client && npm install && npm run build"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   }
 }

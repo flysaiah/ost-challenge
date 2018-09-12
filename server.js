@@ -4,7 +4,7 @@ const path = require('path');
 const http = require('http');
 const app = express();
 const router = express.Router();
-const config = require('./server/config/database.js')
+const config = require('./config/database.js')
 const mongoose = require('mongoose');
 const cors = require('cors');
 
@@ -24,7 +24,7 @@ mongoose.connect(config.uri, {}, (err) => {
 app.use(cors());
 
 // API files for interacting with MongoDB
-const mainAPI = require('./server/routes/mainAPI')(router);
+const mainAPI = require('./routes/mainAPI')(router);
 
 // Parsers
 app.use(bodyParser.json());
@@ -36,6 +36,13 @@ app.use('/api', mainAPI);
 //Set Port
 const port = process.env.PORT || '3131';
 app.set('port', port);
+
+app.use(express.static(path.join(__dirname, "client", "build")))
+// ...
+// Right before your app.listen(), add this:
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+});
 
 const server = http.createServer(app);
 

@@ -1,18 +1,26 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import axios from 'axios';
+import './CreateGroup.css'
 
-class JoinGroup extends Component {
+class createGroup extends Component {
 
   state = {
-    groupPassword: "",
+    newGroupName: "",
+    newGroupPassword: "",
     newUser: ""
+  }
+
+  groupNameChanged = (event) => {
+    this.setState({
+      newGroupName: event.target.value,
+    });
   }
 
   groupPasswordChanged = (event) => {
     this.setState({
-      groupPassword: event.target.value,
+      newGroupPassword: event.target.value,
     });
   }
 
@@ -22,23 +30,17 @@ class JoinGroup extends Component {
     });
   }
 
-  goToCreateGroup = (event) => {
-    this.props.history.push("/createGroup");
-  }
-
-  joinGroup = (event) => {
+  createGroup = (event) => {
     const body = {
-      groupPassword: this.state.groupPassword,
+      groupName: this.state.newGroupName,
+      groupPassword: this.state.newGroupPassword,
       newUser: this.state.newUser
     }
-    axios.post('http://localhost:3131/api/joinGroup', body).then(res => {
+    axios.post('/api/createGroup', body).then(res => {
       if (res.data.success) {
-        localStorage.setItem("ost-challenge-group-name", res.data.groupName);
+        localStorage.setItem("ost-challenge-group-name", body.groupName);
         localStorage.setItem("ost-challenge-current-user", body.newUser);
         this.props.history.push("/");
-      } else if (res.data.message === "Group not found") {
-        // TODO: Message
-        console.log("Incorrect password")
       } else {
         // TODO: Toast
         console.log(res);
@@ -49,23 +51,22 @@ class JoinGroup extends Component {
   render() {
     return (
       <div className="create-group card">
-        <h1>Join Group</h1>
+        <h1>Create a Group</h1>
         <div className="add-new-track-input">
+          <TextField label="Group Name" value={this.state.newGroupName}
+          onChange={this.groupNameChanged} margin="normal"/>
+          <br/>
           <TextField label="Group Password" value={this.state.groupPassword}
           onChange={this.groupPasswordChanged} margin="normal"/>
           <br/>
           <TextField label="Your Name" value={this.state.newUser}
           onChange={this.yourNameChanged} margin="normal"/>
         </div>
-        <Button variant="contained" color="primary" disabled={!this.state.groupPassword || !this.state.newUser }
-        onClick={this.joinGroup}>Join Group</Button>
-        <br/>
-        <br/>
-        <Button variant="contained" color="primary"
-        onClick={this.goToCreateGroup}>Create Group</Button>
+        <Button variant="contained" color="primary" disabled={!this.state.newGroupName || !this.state.newGroupPassword || !this.state.newUser }
+        onClick={this.createGroup}>Create Group</Button>
       </div>
     );
   }
 }
 
-export default JoinGroup;
+export default createGroup;

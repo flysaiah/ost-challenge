@@ -16,6 +16,10 @@ module.exports = (router) => {
     });
   });
 
+  router.post('/testt', (req, res) => {
+    res.json({success: true, message: "YAYAYAYAY"})
+  });
+
   router.post('/createGroup', (req, res) => {
     let session = new Session({
       groupName: req.body.groupName,

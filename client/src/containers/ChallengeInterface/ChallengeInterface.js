@@ -8,6 +8,9 @@ import Clock from '../../components/Clock/Clock';
 import TextField from '@material-ui/core/TextField';
 import './ChallengeInterface.css';
 
+axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
+axios.defaults.headers.post['crossDomain'] = true;
+
 class ChallengeInterface extends Component {
 
   state = {
@@ -41,7 +44,7 @@ class ChallengeInterface extends Component {
         clearInterval(this.interval);
       return;
     }
-    axios.post('http://localhost:3131/api/fetchSessionData', { groupName: groupName }).then(res => {
+    axios.post('/api/fetchSessionData', { groupName: groupName }).then(res => {
       if (res.data.success) {
         console.log(res.data);
         let playerHidden = true;
@@ -83,13 +86,15 @@ class ChallengeInterface extends Component {
       }
     }).catch(error => {
       console.log(error);
+      console.log(error.response);
+      console.log(error.response.status);
       console.log(":()")
     });
   }
 
   loadNextVideo() {
     const newPlaylistIndex = this.state.currentPlaylistIndex + 1;
-    axios.post('http://localhost:3131/api/setnewPlaylistIndex', { groupName: this.state.groupName, currentPlaylistIndex: newPlaylistIndex }).then(res => {
+    axios.post('/api/setnewPlaylistIndex', { groupName: this.state.groupName, currentPlaylistIndex: newPlaylistIndex }).then(res => {
       if (res.data.success) {
         this.refresh();
       } else if (res.data.message === "Group not found") {
@@ -116,7 +121,7 @@ class ChallengeInterface extends Component {
       owner: this.state.currentUser
     }
 
-    axios.post('http://localhost:3131/api/addVideoToPlaylist', { groupName: this.state.groupName, newTrack: newTrack }).then(res => {
+    axios.post('/api/addVideoToPlaylist', { groupName: this.state.groupName, newTrack: newTrack }).then(res => {
       if (res.data.success) {
         console.log(res.data);
         this.setState({
@@ -146,7 +151,7 @@ class ChallengeInterface extends Component {
     const body = {
       groupName: this.state.groupName
     }
-    axios.post('http://localhost:3131/api/disbandGroup', body).then(res => {
+    axios.post('/api/disbandGroup', body).then(res => {
       if (res.data.success) {
         localStorage.setItem("ost-challenge-group-name", "");
         localStorage.setItem("ost-challenge-current-user", "");
@@ -161,7 +166,7 @@ class ChallengeInterface extends Component {
 
   acceptGuess = (memberName) => {
     const body = { groupName: this.state.groupName, memberName: memberName, guessStatus: 3 }
-    axios.post('http://localhost:3131/api/evaluateGuess', body).then(res => {
+    axios.post('/api/evaluateGuess', body).then(res => {
       if (res.data.success) {
         this.refresh();
       } else {
@@ -173,7 +178,7 @@ class ChallengeInterface extends Component {
 
   rejectGuess = (memberName) => {
     const body = { groupName: this.state.groupName, memberName: memberName, guessStatus: 2 }
-    axios.post('http://localhost:3131/api/evaluateGuess', body).then(res => {
+    axios.post('/api/evaluateGuess', body).then(res => {
       if (res.data.success) {
         this.refresh();
       } else {
@@ -184,7 +189,7 @@ class ChallengeInterface extends Component {
   }
 
   makeGuess = (event) => {
-    axios.post('http://localhost:3131/api/makeGuess', { groupName: this.state.groupName, newGuess: this.state.newGuess, name: this.state.currentUser }).then(res => {
+    axios.post('/api/makeGuess', { groupName: this.state.groupName, newGuess: this.state.newGuess, name: this.state.currentUser }).then(res => {
       if (res.data.success) {
         this.refresh();
       } else if (res.data.message === "Group not found") {

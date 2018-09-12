@@ -2,12 +2,15 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import Snackbar from '@material-ui/core/Snackbar';
 
 class JoinGroup extends Component {
 
   state = {
     groupPassword: "",
-    newUser: ""
+    newUser: "",
+    snackbarOpen: false,
+    snackBarMessage: ""
   }
 
   groupPasswordChanged = (event) => {
@@ -26,6 +29,19 @@ class JoinGroup extends Component {
     this.props.history.push("/createGroup");
   }
 
+  displaySnackbar = (message) => {
+    this.setState({
+      snackbarOpen: true,
+      snackBarMessage: message
+    });
+    setTimeout(() => {
+      this.setState({
+        snackbarOpen: false,
+        snackBarMessage: ""
+      });
+    }, 3000)
+  }
+
   joinGroup = (event) => {
     const body = {
       groupPassword: this.state.groupPassword,
@@ -38,36 +54,48 @@ class JoinGroup extends Component {
         this.props.history.push("/");
       } else if (res.data.message === "Group not found") {
         // TODO: Message
-        console.log("Incorrect password")
+        this.displaySnackbar("Incorrect Password");
       } else {
         // TODO: Toast
         console.log(res);
       }
     }).catch(error => {
       console.log(error);
-      console.log(error.response);
-      console.log(error.response.status);
-      console.log(":()")
     });;
   }
 
   render() {
+
+    const snackbar = (
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={this.state.snackbarOpen}
+        ContentProps={{
+          'aria-describedby': 'message-id',
+        }}
+        message={<span id="message-id">{this.state.snackBarMessage}</span>}
+      />
+    )
+
     return (
-      <div className="create-group card">
-        <h1>Join Group</h1>
-        <div className="add-new-track-input">
-          <TextField label="Group Password" value={this.state.groupPassword}
-          onChange={this.groupPasswordChanged} margin="normal"/>
+      <div className="create-group-container">
+        <div className="create-group card">
+          <h1>Join Group</h1>
+          <div className="add-new-track-input">
+            <TextField label="Group Password" value={this.state.groupPassword}
+            onChange={this.groupPasswordChanged} margin="normal"/>
+            <br/>
+            <TextField label="Your Name" value={this.state.newUser}
+            onChange={this.yourNameChanged} margin="normal"/>
+          </div>
+          <Button variant="contained" color="primary" disabled={!this.state.groupPassword || !this.state.newUser }
+          onClick={this.joinGroup}>Join Group</Button>
           <br/>
-          <TextField label="Your Name" value={this.state.newUser}
-          onChange={this.yourNameChanged} margin="normal"/>
+          <br/>
+          <Button variant="contained" color="primary"
+          onClick={this.goToCreateGroup}>Create Group</Button>
         </div>
-        <Button variant="contained" color="primary" disabled={!this.state.groupPassword || !this.state.newUser }
-        onClick={this.joinGroup}>Join Group</Button>
-        <br/>
-        <br/>
-        <Button variant="contained" color="primary"
-        onClick={this.goToCreateGroup}>Create Group</Button>
+        {snackbar}
       </div>
     );
   }

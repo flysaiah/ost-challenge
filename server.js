@@ -37,12 +37,14 @@ app.use('/api', mainAPI);
 const port = process.env.PORT || '3131';
 app.set('port', port);
 
-app.use(express.static(path.join(__dirname, "client", "build")))
-// ...
-// Right before your app.listen(), add this:
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
-});
+if (process.env.PROD_MODE) {
+  app.use(express.static(path.join(__dirname, "client", "build")))
+  // ...
+  // Right before your app.listen(), add this:
+  app.get("*", (req, res) => {
+      res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+  });
+}
 
 const server = http.createServer(app);
 

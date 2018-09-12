@@ -1,5 +1,6 @@
+require('dotenv').config();
 module.exports = {
-  uri: 'mongodb://localhost:27017/ostdb',
+  uri: 'mongodb://' + process.env.DB_USER + ':' + process.env.DB_PASS + '@' + process.env.DB_SERVER,
   secret: 'crypto',
   db: 'ostdb'
 }

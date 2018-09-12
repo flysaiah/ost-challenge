@@ -27,6 +27,7 @@ class ChallengeInterface extends Component {
 
   componentDidMount() {
     this.refresh();
+    setInterval(this.refresh, 2000);
   }
 
   refresh = (event) => {
@@ -42,18 +43,14 @@ class ChallengeInterface extends Component {
         let playerHidden = true;
         if (res.data.session.playlist.length) {
           const nextVideo = res.data.session.playlist[res.data.session.currentPlaylistIndex];
-          console.log(nextVideo);
-          console.log(res.data.session);
           if (nextVideo.owner === currentUser) {
             playerHidden = false;
           }
         }
-        let newGuess = "";
         let waitingOnEval = false;
         let numGuesses = 3;
         for (let member of res.data.session.members) {
           if (member.name === currentUser) {
-            newGuess = member.newGuess
             numGuesses = member.numGuesses
             waitingOnEval = member.waitingOnEval;
             if (member.guessStatus === 3) {
@@ -69,19 +66,19 @@ class ChallengeInterface extends Component {
           playlist: res.data.session.playlist,
           currentPlaylistIndex: res.data.session.currentPlaylistIndex,
           playerHidden: playerHidden,
-          newGuess: newGuess,
           waitingOnEval: waitingOnEval,
           numGuesses: numGuesses
         });
       } else if (res.data.message === "Group not found") {
-        localStorage.setItem("ost-challenge-group-name", "")
-        localStorage.setItem("ost-challenge-current-user", "")
         this.props.history.push('/joinGroup');
         return;
       } else {
         // TODO: Toast
         console.log(res);
       }
+    }).catch(error => {
+      console.log(error);
+      console.log(":()")
     });
   }
 
@@ -91,8 +88,6 @@ class ChallengeInterface extends Component {
       if (res.data.success) {
         this.refresh();
       } else if (res.data.message === "Group not found") {
-        localStorage.setItem("ost-challenge-group-name", "")
-        localStorage.setItem("ost-challenge-current-user", "")
         this.props.history.push('/joinGroup');
         return;
       } else {
@@ -123,14 +118,14 @@ class ChallengeInterface extends Component {
           newTrackURL: ""
         });
       } else if (res.data.message === "Group not found") {
-        localStorage.setItem("ost-challenge-group-name", "")
-        localStorage.setItem("ost-challenge-current-user", "")
         this.props.history.push('/joinGroup');
         return;
       } else {
         // TODO: Toast
         console.log(res);
       }
+    }).catch(error => {
+      console.log(error);
     });
   }
 

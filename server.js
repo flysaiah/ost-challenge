@@ -21,7 +21,7 @@ mongoose.connect(config.uri, {}, (err) => {
 });
 
 // Bypass CORS restrictions
-app.use(cors({origin:true,credentials: true}));
+app.use(cors());
 
 // API files for interacting with MongoDB
 const mainAPI = require('./server/routes/mainAPI')(router);

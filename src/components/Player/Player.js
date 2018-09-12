@@ -57,8 +57,6 @@ class Player extends Component {
         <Button className="player-button" variant="contained" color="primary"
          disabled={!this.props.playlist.length} onClick={this.pause}>PAUSE</Button>
         {loadNextButton}
-        <Button className="player-button" variant="contained" color="primary"
-          onClick={this.props.refresh}>Refresh</Button>
         <div className="player">
           <YouTube className={!this.props.playlist.length || this.props.playerHidden ? "player-hidden" : "player-regular"}
             videoId={currentVideoID}

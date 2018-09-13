@@ -6,9 +6,8 @@ import './Player.css';
 
 class Player extends Component {
 
-  // TODO: Handle bad URLs
-
   player = null;
+  badURL = false;
 
   capturePlayer = (event) => {
     this.player = event.target;
@@ -32,7 +31,6 @@ class Player extends Component {
         iv_load_policy: 3,
       }
     };
-    const currentVideoID = this.props.currentPlaylistIndex < this.props.playlist.length ? this.props.playlist[this.props.currentPlaylistIndex].url.split("v=")[1].split("&")[0] : "";
     let placeholder = null;
      if (this.props.playlist.length && this.props.cannotGuess) {
        placeholder = (<p>Sit back and relax! This one isn't for you.</p>);
@@ -40,6 +38,31 @@ class Player extends Component {
        placeholder = (<p>Add a track to get started!</p>);
      } else if (this.props.playerHidden) {
        placeholder = (<p>Guess the track to see what this is!</p>);
+     }
+
+     let player;
+     try {
+       const currentVideoID = this.props.currentPlaylistIndex < this.props.playlist.length ? this.props.playlist[this.props.currentPlaylistIndex].url.split("www.youtube.com/watch?v=")[1].split("&")[0] : "";
+       player = (
+         <Aux>
+           <div className="player">
+             <YouTube className={!this.props.playlist.length || this.props.playerHidden ? "player-hidden" : "player-regular"}
+               videoId={currentVideoID}
+               opts={opts}
+               onReady={this.capturePlayer}
+             />
+           </div>
+           {placeholder}
+         </Aux>
+       );
+       this.badURL = false;
+     } catch(err) {
+       this.badURL = true;
+       player = (
+         <div className="player">
+           <p>This is an invalid Youtube URL.</p>
+         </div>
+       )
      }
     let loadNextButton = null
     if (this.props.isAdmin) {
@@ -49,6 +72,7 @@ class Player extends Component {
           onClick={this.props.loadNextVideo}>Load Next Video</Button>
       )
     }
+    // console.log(player);
     return (
       <Aux>
         <h1>Currently Playing</h1>
@@ -57,14 +81,7 @@ class Player extends Component {
         <Button className="player-button" variant="contained" color="primary"
          disabled={!this.props.playlist.length} onClick={this.pause}>PAUSE</Button>
         {loadNextButton}
-        <div className="player">
-          <YouTube className={!this.props.playlist.length || this.props.playerHidden ? "player-hidden" : "player-regular"}
-            videoId={currentVideoID}
-            opts={opts}
-            onReady={this.capturePlayer}
-          />
-        </div>
-        {placeholder}
+        {player}
       </Aux>
     );
   }

@@ -27,7 +27,6 @@ class ChallengeInterface extends Component {
     newGuess: "",
     newTrackURL: "",
     groupName: "",
-    groupAdmin: "",
     groupMembers: [],
     currentUser: "",
     canGuessOptions: {},   // Keys will be names of group members, value is true if they can guess the about-to-be-added track
@@ -74,7 +73,6 @@ class ChallengeInterface extends Component {
         }
         this.setState({
           groupName: groupName,
-          groupAdmin: res.data.session.groupAdmin,
           groupMembers: res.data.session.members,
           currentUser: currentUser,
           playlist: res.data.session.playlist,
@@ -213,6 +211,24 @@ class ChallengeInterface extends Component {
     });
   }
 
+  setReadyForNext = (event) => {
+    // Lets admin know they can move on to the next index
+    axios.post('/api/setReadyForNext', { groupName: this.state.groupName, memberName: this.state.currentUser }).then(res => {
+      if (res.data.success) {
+        this.refresh();
+      } else if (res.data.message === "Group not found") {
+        this.props.history.push('/joinGroup');
+        clearInterval(this.interval);
+        return;
+      } else {
+        // TODO: Toast
+        console.log(res);
+      }
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+
   checkboxChange = (memberName) => {
     // Used in <AddNewTrack/> component; maps canGuessOptions to checkboxes list
     const newCanGuessOptions = {
@@ -231,9 +247,11 @@ class ChallengeInterface extends Component {
   render () {
     // User can't guess if they added the current video or if they weren't given permission by the adder
     let cannotGuess = true;
+    let isOwner = false;
     if (this.state.playlist.length) {
       if (this.state.playlist[this.state.currentPlaylistIndex].owner === this.state.currentUser) {
         cannotGuess = false;
+        isOwner = true;
       } else {
         for (let member of this.state.playlist[this.state.currentPlaylistIndex].canGuess) {
           if (member === this.state.currentUser) {
@@ -244,11 +262,17 @@ class ChallengeInterface extends Component {
       }
     }
     let guessStatus;
+    let everyoneReady = true;
     for (let member of this.state.groupMembers) {
       if (member.name === this.state.currentUser) {
         guessStatus = member.guessStatus;
+      } else {
+        if (!member.readyForNext) {
+          everyoneReady = false;
+        }
       }
     }
+
     return (
       <div className="challenge-interface-full-container">
         <Sidebar groupName={this.state.groupName} groupMembers={this.state.groupMembers}
@@ -268,9 +292,10 @@ class ChallengeInterface extends Component {
                playerHidden={this.state.playerHidden}
                loadNextVideo={this.loadNextVideo.bind(this)}
                refresh={this.refresh}
-               isAdmin={this.state.currentUser === this.state.groupAdmin}
                cannotGuess={cannotGuess}
                groupMembers={this.state.groupMembers}
+               everyoneReady={everyoneReady}
+               currentUser={this.state.currentUser}
               />
             </div>
             <div className="bottom-row-container">
@@ -287,6 +312,8 @@ class ChallengeInterface extends Component {
                 waitingOnEval={this.state.waitingOnEval}
                 cannotGuess={cannotGuess}
                 guessStatus={guessStatus}
+                setReadyForNext={this.setReadyForNext}
+                isOwner={isOwner}
               />
               <div className="card bottom-card">
                 <h1>Scratchwork</h1>

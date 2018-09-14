@@ -7,7 +7,6 @@ import React, { Component } from 'react';
 import Aux from '../../hoc/Aux/Aux';
 import Button from '@material-ui/core/Button';
 import Slider from '@material-ui/lab/Slider';
-import Typography from '@material-ui/core/Typography';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import PlayArrow from '@material-ui/icons/PlayArrow';
@@ -98,10 +97,10 @@ class Player extends Component {
      }
     // Only the admin can load the next video
     let loadNextButton = null
-    if (this.props.isAdmin) {
+    if (this.props.playlist.length && (this.props.playlist[this.props.currentPlaylistIndex].owner === this.props.currentUser)) {
       loadNextButton = (
         <Button className="player-button" variant="contained" color="primary"
-         disabled={this.props.currentPlaylistIndex >= this.props.playlist.length - 1}
+         disabled={this.props.currentPlaylistIndex >= this.props.playlist.length - 1 || !this.props.everyoneReady}
           onClick={this.props.loadNextVideo}>Load Next Video</Button>
       )
     }

@@ -19,9 +19,8 @@ module.exports = (router) => {
   router.post('/createGroup', (req, res) => {
     let session = new Session({
       groupName: req.body.groupName,
-      groupAdmin: req.body.newUser,
       groupPassword: req.body.groupPassword,
-      members: [{ name: req.body.newUser, numCorrect: 0, numIncorrect: 0, newGuess: "", waitingOnEval: false, numGuesses: 3, guessStatus: 1 }],
+      members: [{ name: req.body.newUser, numCorrect: 0, numIncorrect: 0, newGuess: "", waitingOnEval: false, numGuesses: 3, guessStatus: 1, readyForNext: true }],
       playlist: [],
       currentPlaylistIndex: 0,
       created: new Date()
@@ -36,7 +35,7 @@ module.exports = (router) => {
   });
 
   router.post('/joinGroup', (req, res) => {
-    const newMember = { name: req.body.newUser, numCorrect: 0, numIncorrect: 0, newGuess: "", waitingOnEval: false, numGuesses: 3, guessStatus: 1 }
+    const newMember = { name: req.body.newUser, numCorrect: 0, numIncorrect: 0, newGuess: "", waitingOnEval: false, numGuesses: 3, guessStatus: 1, readyForNext: true }
     Session.findOneAndUpdate({ groupPassword: req.body.groupPassword }, { $push: { members: newMember } }, (err, session) => {
       if (err) {
         res.json({ success: false, message: err });
@@ -77,6 +76,7 @@ module.exports = (router) => {
           groupMember.newGuess = "";
           groupMember.guessStatus = 1;
           groupMember.waitingOnEval = false;
+          groupMember.readyForNext = false;
         }
         Session.findOneAndUpdate({ groupName: req.body.groupName }, { $set: { members: session.members, currentPlaylistIndex: req.body.currentPlaylistIndex } }, (err, session) => {
           if (err) {
@@ -104,6 +104,31 @@ module.exports = (router) => {
             groupMember.guessStatus = 1;
             groupMember.waitingOnEval = true;
             groupMember.numGuesses -= 1;
+          }
+        }
+        Session.findOneAndUpdate({ groupName: req.body.groupName }, { $set: { members: session.members } }, (err, session) => {
+          if (err) {
+            res.json({ success: false, message: err });
+          } else if (!session) {
+            res.json({ success: false, message: "Group not found" });
+          } else {
+            res.json({ success: true });
+          }
+        });
+      }
+    });
+  });
+
+  router.post('/setReadyForNext', (req, res) => {
+    Session.findOne({ groupName: req.body.groupName }, (err, session) => {
+      if (err) {
+        res.json({ success: false, message: err });
+      } else if (!session) {
+        res.json({ success: false, message: "Group not found" });
+      } else {
+        for (let groupMember of session.members) {
+          if (groupMember.name === req.body.memberName) {
+            groupMember.readyForNext = true;
           }
         }
         Session.findOneAndUpdate({ groupName: req.body.groupName }, { $set: { members: session.members } }, (err, session) => {

@@ -18,9 +18,10 @@ const playerStatsContainer = (props) => {
         currentPlaylistIndex={props.currentPlaylistIndex}
         playerHidden={props.playerHidden}
         loadNextVideo={props.loadNextVideo}
-        isAdmin={props.isAdmin}
         refresh={props.refresh}
         cannotGuess={props.cannotGuess}
+        everyoneReady={props.everyoneReady}
+        currentUser={props.currentUser}
         />
       </div>
       <div className="stats-container">

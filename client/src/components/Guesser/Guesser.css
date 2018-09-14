@@ -2,9 +2,16 @@
   margin-top: 10px;
 }
 .guess-buttons-container {
-  margin-top: 10px;
+  margin-top: 5px;
 }
 .guess-button {
   margin-left: 5px !important;
   margin-right: 5px !important;
+}
+.guess-input {
+  margin-top: -30px;
+  margin-bottom: 10px;
+}
+.ready-for-next-button {
+  margin-top: -5px !important;
 }

@@ -1,3 +1,9 @@
+/*
+ChallengeInterface.js
+The main container that contains both the main state of the
+application and holds all the components/containers
+*/
+
 import React, { Component } from 'react';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import PlayerStatsContainer from '../PlayerStatsContainer/PlayerStatsContainer';
@@ -17,18 +23,18 @@ class ChallengeInterface extends Component {
     playlist: [],
     currentPlaylistIndex: 0,
     playerHidden: false,
-    numGuesses: 3,
+    numGuesses: 3,   // Number of guesses the current user has left for this song
     newGuess: "",
     newTrackURL: "",
     groupName: "",
     groupAdmin: "",
     groupMembers: [],
     currentUser: "",
-    canGuessOptions: {},
+    canGuessOptions: {},   // Keys will be names of group members, value is true if they can guess the about-to-be-added track
     waitingOnEval: false
   }
 
-  interval = null;
+  interval = null;   // Used for refreshing page every 2 seconds
 
   componentDidMount() {
     this.refresh();
@@ -36,15 +42,17 @@ class ChallengeInterface extends Component {
   }
 
   refresh = (event) => {
+    // Always start by making sure current user is "logged in"; if not then kick them out
     const groupName = localStorage.getItem("ost-challenge-group-name");
     const currentUser = localStorage.getItem("ost-challenge-current-user");
     if (!groupName || !currentUser) {
       this.props.history.push('/joinGroup');
-        clearInterval(this.interval);
+      clearInterval(this.interval);
       return;
     }
     axios.post('/api/fetchSessionData', { groupName: groupName }).then(res => {
       if (res.data.success) {
+        // Player should be hidden unless they added the video or have permission to guess
         let playerHidden = true;
         if (res.data.session.playlist.length) {
           const nextVideo = res.data.session.playlist[res.data.session.currentPlaylistIndex];
@@ -52,6 +60,7 @@ class ChallengeInterface extends Component {
             playerHidden = false;
           }
         }
+        // waitingOnEval is true if they sent a guess and are waiting for it to be evaluated
         let waitingOnEval = false;
         let numGuesses = 3;
         for (let member of res.data.session.members) {
@@ -77,7 +86,6 @@ class ChallengeInterface extends Component {
       } else if (res.data.message === "Group not found") {
         this.props.history.push('/joinGroup');
         clearInterval(this.interval);
-        return;
       } else {
         // TODO: Toast
         console.log(res);
@@ -88,6 +96,7 @@ class ChallengeInterface extends Component {
   }
 
   loadNextVideo() {
+    // Increment playlist index & refresh to make sure everything is correct
     const newPlaylistIndex = this.state.currentPlaylistIndex + 1;
     axios.post('/api/setnewPlaylistIndex', { groupName: this.state.groupName, currentPlaylistIndex: newPlaylistIndex }).then(res => {
       if (res.data.success) {
@@ -95,7 +104,6 @@ class ChallengeInterface extends Component {
       } else if (res.data.message === "Group not found") {
         this.props.history.push('/joinGroup');
         clearInterval(this.interval);
-        return;
       } else {
         // TODO: Toast
         console.log(res);
@@ -104,6 +112,7 @@ class ChallengeInterface extends Component {
   }
 
   addTrackToPlaylist = () => {
+    // First generate canGuess array for new track, then add to database
     const canGuess = [];
     for (let groupMember of this.state.groupMembers) {
       if (this.state.canGuessOptions[groupMember.name]) {
@@ -191,7 +200,6 @@ class ChallengeInterface extends Component {
         localStorage.setItem("ost-challenge-current-user", "")
         this.props.history.push('/joinGroup');
         clearInterval(this.interval);
-        return;
       } else {
         // TODO: Toast
         console.log(res);
@@ -206,6 +214,7 @@ class ChallengeInterface extends Component {
   }
 
   checkboxChange = (memberName) => {
+    // Used in <AddNewTrack/> component; maps canGuessOptions to checkboxes list
     const newCanGuessOptions = {
       ...this.state.canGuessOptions
     }
@@ -220,6 +229,7 @@ class ChallengeInterface extends Component {
   }
 
   render () {
+    // User can't guess if they added the current video or if they weren't given permission by the adder
     let cannotGuess = true;
     if (this.state.playlist.length) {
       if (this.state.playlist[this.state.currentPlaylistIndex].owner === this.state.currentUser) {

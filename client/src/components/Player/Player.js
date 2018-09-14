@@ -1,3 +1,8 @@
+/*
+Player.js
+Youtube player that can play/pause youtube tracks added by users
+*/
+
 import React, { Component } from 'react';
 import Aux from '../../hoc/Aux/Aux';
 import Button from '@material-ui/core/Button';
@@ -23,6 +28,7 @@ class Player extends Component {
 
   render() {
 
+    // Options for Youtube player
     const opts = {
       playerVars: { // https://developers.google.com/youtube/player_parameters
         controls: 0,
@@ -31,6 +37,7 @@ class Player extends Component {
         iv_load_policy: 3,
       }
     };
+    // Placeholder for various situations
     let placeholder = null;
      if (this.props.playlist.length && this.props.cannotGuess) {
        placeholder = (<p>Sit back and relax! This one isn't for you.</p>);
@@ -41,6 +48,7 @@ class Player extends Component {
      }
 
      let player;
+     // Try to validate input; if we can't then show placeholder accordingly
      try {
        const currentVideoID = this.props.currentPlaylistIndex < this.props.playlist.length ? this.props.playlist[this.props.currentPlaylistIndex].url.split("www.youtube.com/watch?v=")[1].split("&")[0] : "";
        player = (
@@ -64,6 +72,7 @@ class Player extends Component {
          </div>
        )
      }
+    // Only the admin can load the next video
     let loadNextButton = null
     if (this.props.isAdmin) {
       loadNextButton = (
@@ -72,7 +81,6 @@ class Player extends Component {
           onClick={this.props.loadNextVideo}>Load Next Video</Button>
       )
     }
-    // console.log(player);
     return (
       <Aux>
         <h1>Currently Playing</h1>

@@ -1,3 +1,8 @@
+/*
+Clock.js
+Simple clock widget that displays London time
+*/
+
 import React from 'react';
 import Clock from 'react-live-clock';
 import './Clock.css'

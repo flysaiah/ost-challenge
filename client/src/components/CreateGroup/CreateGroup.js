@@ -1,3 +1,8 @@
+/*
+CreateGroup.js
+Simple form to create a new group
+*/
+
 import React, { Component } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -31,6 +36,7 @@ class createGroup extends Component {
     });
   }
 
+  // For error messages
   displaySnackbar = (message) => {
     this.setState({
       snackbarOpen: true,

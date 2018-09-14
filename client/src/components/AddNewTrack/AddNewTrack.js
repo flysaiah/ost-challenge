@@ -1,3 +1,8 @@
+/*
+AddNewTrack.js
+Widget for adding new tracks to playlist
+*/
+
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -15,6 +20,7 @@ const addNewTrack = (props) => {
     }
   }
 
+  // Checkboxes that indicate whether a group member can guess this track or not
   const checkboxes = guessingMembers.map((member) => {
     return (<FormControlLabel
         control={

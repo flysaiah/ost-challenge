@@ -1,3 +1,9 @@
+/*
+PlayerStatsContainer.js
+A container that holds both the Player and
+the Stats components, and renders them side by side
+*/
+
 import React from 'react';
 import Player from '../../components/Player/Player';
 import Stats from '../../components/Stats/Stats';

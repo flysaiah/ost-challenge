@@ -1,3 +1,8 @@
+/*
+Guesser.js
+Show stats per user
+*/
+
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -42,6 +47,7 @@ const guesser = (props) => {
       <p>Waiting on evaluation of your guess!</p>
     );
 
+    // Multiple situations, depending on if user is the owner of the video / can vs cannot guess
     if (!props.waitingOnEval && props.guessStatus === 1 && !props.cannotGuess) {
       guessInput = (
         <Aux>

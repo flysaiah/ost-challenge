@@ -31,9 +31,7 @@ class Player extends Component {
     // Options for Youtube player
     const opts = {
       playerVars: { // https://developers.google.com/youtube/player_parameters
-        controls: 0,
         disablekb: 1,
-        fs: 0,
         iv_load_policy: 3,
       }
     };

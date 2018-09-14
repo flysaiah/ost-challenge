@@ -67,7 +67,7 @@ class ChallengeInterface extends Component {
           if (member.name === currentUser) {
             numGuesses = member.numGuesses
             waitingOnEval = member.waitingOnEval;
-            if (member.guessStatus === 3) {
+            if (member.guessStatus === 3 || member.guessStatus === 2 && member.numGuesses === 0) {
               playerHidden = false;
             }
           }

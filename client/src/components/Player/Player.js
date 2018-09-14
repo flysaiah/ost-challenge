@@ -6,24 +6,49 @@ Youtube player that can play/pause youtube tracks added by users
 import React, { Component } from 'react';
 import Aux from '../../hoc/Aux/Aux';
 import Button from '@material-ui/core/Button';
+import Slider from '@material-ui/lab/Slider';
+import Typography from '@material-ui/core/Typography';
+import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
+import PlayArrow from '@material-ui/icons/PlayArrow';
+import Pause from '@material-ui/icons/Pause';
 import YouTube from 'react-youtube';
 import './Player.css';
 
 class Player extends Component {
+
+  state = {
+    volume: 50,
+    isPaused: true
+  }
 
   player = null;
   badURL = false;
 
   capturePlayer = (event) => {
     this.player = event.target;
+    this.player.setVolume(this.state.volume);
   }
 
   play = (event) => {
     this.player.playVideo();
+    this.setState({
+      isPaused: false
+    });
   }
 
   pause = (event) => {
     this.player.pauseVideo();
+    this.setState({
+      isPaused: true
+    });
+  }
+
+  setVolume = (event, volume) => {
+    this.player.setVolume(volume);
+    this.setState({
+      volume: volume
+    });
   }
 
   render() {
@@ -31,8 +56,9 @@ class Player extends Component {
     // Options for Youtube player
     const opts = {
       playerVars: { // https://developers.google.com/youtube/player_parameters
+        controls: 0,
         disablekb: 1,
-        iv_load_policy: 3,
+        iv_load_policy: 3
       }
     };
     // Placeholder for various situations
@@ -83,14 +109,26 @@ class Player extends Component {
     if (this.props.playlist.length && !this.props.playerHidden) {
       posterText = "Added by: " + this.props.playlist[this.props.currentPlaylistIndex].owner;
     }
+    let playPauseButton = (
+      <IconButton color="primary" disabled={!this.props.playlist.length} onClick={this.pause}>
+        <Pause />
+      </IconButton>
+    )
+    if (this.state.isPaused) {
+      playPauseButton = (
+        <IconButton color="primary" disabled={!this.props.playlist.length} onClick={this.play}>
+          <PlayArrow />
+        </IconButton>
+      )
+    }
     return (
       <Aux>
         <h1>{this.props.playlist.length ? "Currently Playing" : "No Tracks in Playlist"}</h1>
         <p className="player-poster">{posterText}</p>
-        <Button className="player-button" variant="contained" color="primary"
-         disabled={!this.props.playlist.length} onClick={this.play}>PLAY</Button>
-        <Button className="player-button" variant="contained" color="primary"
-         disabled={!this.props.playlist.length} onClick={this.pause}>PAUSE</Button>
+        {playPauseButton}
+        <div className="volume-slider">
+          <Slider value={this.state.volume} onChange={this.setVolume} />
+        </div>
         {loadNextButton}
         {player}
       </Aux>

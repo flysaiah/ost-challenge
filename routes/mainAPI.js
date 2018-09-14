@@ -15,7 +15,7 @@ module.exports = (router) => {
       }
     });
   });
-  
+
   router.post('/createGroup', (req, res) => {
     let session = new Session({
       groupName: req.body.groupName,
@@ -101,6 +101,7 @@ module.exports = (router) => {
         for (let groupMember of session.members) {
           if (groupMember.name === req.body.name) {
             groupMember.newGuess = req.body.newGuess;
+            groupMember.guessStatus = 1;
             groupMember.waitingOnEval = true;
             groupMember.numGuesses -= 1;
           }

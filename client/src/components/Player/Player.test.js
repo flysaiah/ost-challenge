@@ -13,7 +13,7 @@ describe('<Player />', () => {
     const wrapper = shallow(<Player playerHidden={false}
       playlist={[{url: "test1?v=34", owner: "Jerry", canGuess: [], numGuesses: 3}, {url: "test1?v=34", owner: "Jerry", canGuess: [], numGuesses: 3}, {url: "test1?v=34", owner: "Jerry", canGuess: [], numGuesses: 3}]}
       currentPlaylistIndex={2}
-      isAdmin={true}
+      currentUser={"Jerry"}
       />);
     let found = false;
     for (let child of wrapper.props().children) {

@@ -81,9 +81,14 @@ class Player extends Component {
           onClick={this.props.loadNextVideo}>Load Next Video</Button>
       )
     }
+    let posterText = "";
+    if (this.props.playlist.length && !this.props.playerHidden) {
+      posterText = "Added by: " + this.props.playlist[this.props.currentPlaylistIndex].owner;
+    }
     return (
       <Aux>
         <h1>{this.props.playlist.length ? "Currently Playing" : "No Tracks in Playlist"}</h1>
+        <p className="player-poster">{posterText}</p>
         <Button className="player-button" variant="contained" color="primary"
          disabled={!this.props.playlist.length} onClick={this.play}>PLAY</Button>
         <Button className="player-button" variant="contained" color="primary"

@@ -83,7 +83,7 @@ class Player extends Component {
     }
     return (
       <Aux>
-        <h1>Currently Playing</h1>
+        <h1>{this.props.playlist.length ? "Currently Playing" : "No Tracks in Playlist"}</h1>
         <Button className="player-button" variant="contained" color="primary"
          disabled={!this.props.playlist.length} onClick={this.play}>PLAY</Button>
         <Button className="player-button" variant="contained" color="primary"

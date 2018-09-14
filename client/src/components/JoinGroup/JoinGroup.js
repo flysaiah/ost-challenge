@@ -1,3 +1,8 @@
+/*
+JoinGroup.js
+Simple form to join a group
+*/
+
 import React, { Component } from 'react';
 import axios from 'axios';
 import TextField from '@material-ui/core/TextField';
@@ -29,6 +34,7 @@ class JoinGroup extends Component {
     this.props.history.push("/createGroup");
   }
 
+  // For error messages
   displaySnackbar = (message) => {
     this.setState({
       snackbarOpen: true,

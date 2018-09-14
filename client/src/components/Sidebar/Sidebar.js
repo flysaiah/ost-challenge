@@ -1,3 +1,8 @@
+/*
+Siderbar.js
+Show group information and host group chat (eventually)
+*/
+
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import './Sidebar.css';

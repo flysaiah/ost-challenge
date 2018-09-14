@@ -1,3 +1,8 @@
+/*
+Stats.js
+Show stats per user
+*/
+
 import React from 'react';
 import Aux from '../../hoc/Aux/Aux';
 import './Stats.css'

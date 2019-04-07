@@ -1,0 +1,12 @@
+.hint {
+  font-size: 18px;
+  text-align: left;
+  margin-bottom: 20px;
+}
+.provide-hint-button {
+  margin-top: -5px !important;
+}
+.hint-input {
+  margin-top: -30px;
+  margin-bottom: 10px;
+}

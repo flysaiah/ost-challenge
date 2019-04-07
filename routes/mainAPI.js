@@ -47,6 +47,26 @@ module.exports = (router) => {
     });
   });
 
+  router.post('/provideHint', (req, res) => {
+    Session.findOne({ groupName: req.body.groupName }, (err, session) => {
+      if (err) {
+        res.json({ success: false, message: err });
+      } else if (!session) {
+        res.json({ success: false, message: "Group not found" });
+      } else {
+        session.playlist[session.currentPlaylistIndex].hints.push(req.body.hint);
+        Session.findOneAndUpdate({ groupName: req.body.groupName }, { $set: { playlist: session.playlist } }, (err, session) => {
+          if (err) {
+            res.json({ success: false, message: err });
+          } else if (!session) {
+            res.json({ success: false, message: "Group not found" });
+          } else {
+            res.json({ success: true });
+          }
+        });
+      }
+    });
+  });
   router.post('/setNewPlaylistIndex', (req, res) => {
     Session.findOne({ groupName: req.body.groupName }, (err, session) => {
       if (err) {

@@ -9,9 +9,9 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import PlayerStatsContainer from '../PlayerStatsContainer/PlayerStatsContainer';
 import AddNewTrack from '../../components/AddNewTrack/AddNewTrack';
 import Guesser from '../../components/Guesser/Guesser';
+import Hints from '../../components/Hints/Hints';
 import axios from 'axios';
 import Clock from '../../components/Clock/Clock';
-import TextField from '@material-ui/core/TextField';
 import './ChallengeInterface.css';
 
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
@@ -30,7 +30,8 @@ class ChallengeInterface extends Component {
     groupMembers: [],
     currentUser: "",
     canGuessOptions: {},   // Keys will be names of group members, value is true if they can guess the about-to-be-added track
-    waitingOnEval: false
+    waitingOnEval: false,
+    newHint: ""
   }
 
   interval = null;   // Used for refreshing page every 2 seconds
@@ -211,6 +212,12 @@ class ChallengeInterface extends Component {
     });
   }
 
+  changeHint = (event) => {
+    this.setState({
+      newHint: event.target.value
+    })
+  }
+
   setReadyForNext = (event) => {
     // Lets admin know they can move on to the next index
     axios.post('/api/setReadyForNext', { groupName: this.state.groupName, memberName: this.state.currentUser }).then(res => {
@@ -241,6 +248,27 @@ class ChallengeInterface extends Component {
     }
     this.setState({
       canGuessOptions: newCanGuessOptions
+    });
+  }
+
+  provideHint = () => {
+    const hint = this.state.newHint;
+    this.setState({
+      newHint: ""
+    });
+    axios.post('/api/provideHint', { groupName: this.state.groupName, hint: hint }).then(res => {
+      if (res.data.success) {
+        // nothing to do for success
+      } else if (res.data.message === "Group not found") {
+        this.props.history.push('/joinGroup');
+        clearInterval(this.interval);
+        return;
+      } else {
+        // TODO: Toast
+        console.log(res);
+      }
+    }).catch(error => {
+      console.log(error);
     });
   }
 
@@ -315,12 +343,14 @@ class ChallengeInterface extends Component {
                 setReadyForNext={this.setReadyForNext}
                 isOwner={isOwner}
               />
-              <div className="card bottom-card">
-                <h1>Scratchwork</h1>
-                <div className="add-new-track-input">
-                  <TextField label="Put ideas here" multiline margin="normal"/>
-                </div>
-              </div>
+              <Hints
+                hints={this.state.playlist.length ? this.state.playlist[this.state.currentPlaylistIndex].hints : null}
+                cannotGuess={cannotGuess}
+                provideHint={this.provideHint}
+                isOwner={isOwner}
+                newHint={this.state.newHint}
+                inputChangeHandler={this.changeHint}
+              />
               <AddNewTrack
               playlist={this.state.playlist}
               inputChangeHandler={this.setNewTrackURL}

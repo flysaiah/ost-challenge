@@ -16,11 +16,11 @@ const guesser = (props) => {
 
   for (let member of props.groupMembers) {
     if (member.name === props.currentUser) {
-     // ReadyForNext button is enabled if they are done guessing
-     if (!member.readyForNext && ((member.guessStatus === 3 || (member.numGuesses === 0 && member.guessStatus !== 1) || props.cannotGuess))) {
-       readyForNextDisabled = false;
-     }
-   }
+      // ReadyForNext button is enabled if they are done guessing
+      if (!member.readyForNext && ((member.guessStatus === 3 || (member.numGuesses === 0 && member.guessStatus !== 1) || props.cannotGuess))) {
+        readyForNextDisabled = false;
+      }
+    }
   }
 
   if (props.currentVideo && props.currentUser === props.currentVideo.owner) {
@@ -33,18 +33,30 @@ const guesser = (props) => {
     }
 
     const guesses = guessingMembers.map((member) => {
-        const guess = (member.newGuess && member.waitingOnEval) ? member.newGuess : "No current guess";
-        return (
-          <div className="guess-container" key={member.name}>
-            {member.name}'s guess: {guess}
-            <div className="guess-buttons-container">
-              <Button className="guess-button" variant="contained" color="primary" disabled={!member.newGuess || !member.waitingOnEval}
+      const guess = (member.newGuess && member.waitingOnEval) ? member.newGuess : "No current guess";
+      let content = (
+        <Aux>
+          {member.name}'s guess: {guess}
+          <div className="guess-buttons-container">
+            <Button className="guess-button" variant="contained" color="primary" disabled={!member.newGuess || !member.waitingOnEval}
               onClick={props.acceptGuess.bind(member.name, member.name)}>Accept</Button>
-              <Button className="guess-button" variant="contained" color="secondary" disabled={!member.newGuess || !member.waitingOnEval}
+            <Button className="guess-button" variant="contained" color="secondary" disabled={!member.newGuess || !member.waitingOnEval}
               onClick={props.rejectGuess.bind(member.name, member.name)}>Reject</Button>
-            </div>
           </div>
+        </Aux>
+      );
+      if ((member.numGuesses === 0 && !member.waitingOnEval) || member.guessStatus === 3) {
+        content = (
+          <Aux>
+            {member.name}: No more guesses
+        </Aux>
         )
+      }
+      return (
+        <div className="guess-container" key={member.name}>
+          {content}
+        </div>
+      )
     });
     guessInterface = (
       <Aux>
@@ -63,25 +75,25 @@ const guesser = (props) => {
         <Aux>
           <div className="guess-input">
             <TextField label="Write guess here" value={props.newGuess}
-            onChange={props.inputChangeHandler} margin="normal"/>
+              onChange={props.inputChangeHandler} margin="normal" />
           </div>
           <Button variant="contained" color="primary" disabled={!props.newGuess || props.numGuesses <= 0}
-          onClick={props.handleButtonClick}>Make Guess</Button>
-          <br/>
+            onClick={props.handleButtonClick}>Make Guess</Button>
+          <br />
         </Aux>
       )
     } else if (!props.waitingOnEval && props.guessStatus === 2) {
       guessInput = (
         <Aux>
           <p>You were incorrect.</p>
-          <br/>
+          <br />
           <div className="guess-input">
             <TextField label="Write guess here" value={props.newGuess}
-            onChange={props.inputChangeHandler} margin="normal"/>
+              onChange={props.inputChangeHandler} margin="normal" />
           </div>
           <Button variant="contained" color="primary" disabled={!props.newGuess || props.numGuesses <= 0}
-          onClick={props.handleButtonClick}>Make Guess</Button>
-          <br/>
+            onClick={props.handleButtonClick}>Make Guess</Button>
+          <br />
         </Aux>
       )
     } else if (!props.waitingOnEval && props.guessStatus === 3) {
@@ -108,13 +120,13 @@ const guesser = (props) => {
 
   const readyForNextButton = (!props.isOwner) ? (
     <Button className="ready-for-next-button" variant="contained" color="primary" disabled={readyForNextDisabled}
-    onClick={props.setReadyForNext}>Ready for Next</Button>
+      onClick={props.setReadyForNext}>Ready for Next</Button>
   ) : null
 
   return (
     <div className="card bottom-card">
       {guessInterface}
-      <br/>
+      <br />
       {readyForNextButton}
     </div>
   );

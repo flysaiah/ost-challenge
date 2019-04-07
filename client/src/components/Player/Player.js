@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import Aux from '../../hoc/Aux/Aux';
 import Button from '@material-ui/core/Button';
 import Slider from '@material-ui/lab/Slider';
-import Icon from '@material-ui/core/Icon';
+// import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Pause from '@material-ui/icons/Pause';

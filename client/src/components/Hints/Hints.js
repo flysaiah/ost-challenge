@@ -29,7 +29,12 @@ const hints = (props) => {
                 <Button className="provide-hint-button" variant="contained" color="primary" onClick={props.provideHint} disabled={!props.newHint}>Provide Hint</Button>
             </Aux>        )
     } else if (props.cannotGuess) {
-        renderedContent = null;
+        renderedContent = (
+            <Aux>
+                <h1>Hints</h1>
+                No hints available.
+            </Aux>
+        )
     } else {
         renderedContent = (
             <Aux>

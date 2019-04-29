@@ -23,6 +23,7 @@ class Player extends Component {
 
   player = null;
   badURL = false;
+  interval = null;
 
   capturePlayer = (event) => {
     this.player = event.target;
@@ -50,8 +51,28 @@ class Player extends Component {
     });
   }
 
-  render() {
+  setIntervalCheck = () => {
+    if (!this.interval && !this.state.isPaused) {
+      this.interval = setInterval(() => {
+        // If the video is about done, automatically pause it
+        if (!this.state.isPaused && this.player.getDuration() != 0 && this.player.getDuration() - this.player.getCurrentTime() < .2) {
+          this.pause();
+          clearInterval(this.interval);
+          this.interval = null;
+        }
+      }, 150);
+    }
+  }
 
+  componentWillUnmount() {
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = null;
+    }
+  }
+
+  render() {
+    this.setIntervalCheck();
     // Options for Youtube player
     const opts = {
       playerVars: { // https://developers.google.com/youtube/player_parameters

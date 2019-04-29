@@ -11,7 +11,6 @@ import AddNewTrack from '../../components/AddNewTrack/AddNewTrack';
 import Guesser from '../../components/Guesser/Guesser';
 import Hints from '../../components/Hints/Hints';
 import axios from 'axios';
-import Clock from '../../components/Clock/Clock';
 import './ChallengeInterface.css';
 
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
@@ -310,9 +309,6 @@ class ChallengeInterface extends Component {
             <h1 className="App-title">My OST Challenge, Your Beats!</h1>
           </header>
           <div className="challenger-interface">
-            <div className="top-row-container">
-              <Clock />
-            </div>
             <div>
               <PlayerStatsContainer
                playlist={this.state.playlist}

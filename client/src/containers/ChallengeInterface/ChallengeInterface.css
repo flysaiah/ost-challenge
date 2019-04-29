@@ -1,5 +1,5 @@
 .challenge-interface-full-container {
-  height: 118%;
+  height: 99%;
 }
 .challenge-interface-right-container {
   width: 80%;
@@ -9,9 +9,6 @@
   width: 1050px;
   margin-left: auto;
   margin-right: auto;
-}
-.top-row-container {
-  margin-top: 20px;
 }
 .bottom-row-container {
   display: flex;

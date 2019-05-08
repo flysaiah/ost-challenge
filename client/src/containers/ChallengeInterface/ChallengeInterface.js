@@ -10,6 +10,7 @@ import PlayerStatsContainer from '../PlayerStatsContainer/PlayerStatsContainer';
 import AddNewTrack from '../../components/AddNewTrack/AddNewTrack';
 import Guesser from '../../components/Guesser/Guesser';
 import Hints from '../../components/Hints/Hints';
+import Status from '../../components/Status/Status';
 import axios from 'axios';
 import './ChallengeInterface.css';
 
@@ -289,8 +290,13 @@ class ChallengeInterface extends Component {
       }
     }
     let guessStatus;
+    let everyoneDoneGuessing = true;
     let everyoneReady = true;
+    console.log(this.state.playlist[this.state.currentPlaylistIndex]);
     for (let member of this.state.groupMembers) {
+      if (this.state.playlist.length && member.guessStatus !== 3 && (member.numGuesses !== 0 || member.numGuesses === 0 && member.guessStatus === 1) && this.state.playlist[this.state.currentPlaylistIndex].canGuess.indexOf(member.name) !== -1 && this.state.playlist[this.state.currentPlaylistIndex].owner !== member.name) {
+        everyoneDoneGuessing = false;
+      }
       if (member.name === this.state.currentUser) {
         guessStatus = member.guessStatus;
       } else {
@@ -309,6 +315,9 @@ class ChallengeInterface extends Component {
             <h1 className="App-title">My OST Challenge, Your Beats!</h1>
           </header>
           <div className="challenger-interface">
+          <div className="top-row-container">
+              <Status doneGuessing={everyoneDoneGuessing} />
+            </div>
             <div>
               <PlayerStatsContainer
                playlist={this.state.playlist}

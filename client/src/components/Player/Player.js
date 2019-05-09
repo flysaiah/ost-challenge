@@ -70,6 +70,10 @@ class Player extends Component {
       this.startTime = this.props.startTime;
       this.startInterval = setInterval(() => {
         const tmp = new Date(ServerDate());
+        console.log("SERVER DATE: ");
+        console.log(tmp);
+        console.log("MY DATE: ");
+        console.log(new Date(this.startTime));
         if (tmp >= new Date(this.startTime) && this.player) {
           this.play();
           clearInterval(this.startInterval);

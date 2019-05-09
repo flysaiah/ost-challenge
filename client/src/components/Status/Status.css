@@ -1,0 +1,17 @@
+.status-card {
+  width: 250px;
+  text-align: center;
+  font-size: 18px;
+}
+.status-container {
+  display: inline-block;
+}
+
+.status-done {
+  color: green;
+}
+
+.status-guessing {
+  color: red;
+}
+

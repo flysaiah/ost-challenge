@@ -7,12 +7,14 @@ import React, { Component } from 'react';
 import Aux from '../../hoc/Aux/Aux';
 import Button from '@material-ui/core/Button';
 import Slider from '@material-ui/lab/Slider';
-import Icon from '@material-ui/core/Icon';
+// import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Pause from '@material-ui/icons/Pause';
+import ServerDate from '../../lib/ServerDate';
 import YouTube from 'react-youtube';
 import './Player.css';
+import { Server } from 'https';
 
 class Player extends Component {
 
@@ -23,6 +25,9 @@ class Player extends Component {
 
   player = null;
   badURL = false;
+  startTime = null;
+  startInterval = null;
+  stopInterval = null;
 
   capturePlayer = (event) => {
     this.player = event.target;
@@ -50,8 +55,46 @@ class Player extends Component {
     });
   }
 
-  render() {
+  setIntervalCheck = () => {
+    if (!this.stopInterval && !this.state.isPaused) {
+      this.stopInterval = setInterval(() => {
+        // If the video is about done, automatically pause it
+        if (!this.state.isPaused && this.player.getDuration() != 0 && this.player.getDuration() - this.player.getCurrentTime() < .2) {
+          this.pause();
+          clearInterval(this.stopInterval);
+          this.stopInterval = null;
+        }
+      }, 150);
+    }
+    if (!this.startInterval && this.props.startTime !== this.startTime) {
+      this.startTime = this.props.startTime;
+      this.startInterval = setInterval(() => {
+        const tmp = new Date(ServerDate());
+        if (tmp >= new Date(this.startTime) && this.player) {
+          this.play();
+          clearInterval(this.startInterval);
+          this.startInterval = null;
+        }
+      }, 100);
+      if (this.player) {
+        this.pause();
+      }
+    }
+  }
 
+  componentWillUnmount() {
+    if (this.startInterval) {
+      clearInterval(this.startInterval);
+      this.startInterval = null;
+    }
+    if (this.stopInterval) {
+      clearInterval(this.stopInterval);
+      this.stopInterval = null;
+    }
+  }
+
+  render() {
+    this.setIntervalCheck();
     // Options for Youtube player
     const opts = {
       playerVars: { // https://developers.google.com/youtube/player_parameters

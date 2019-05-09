@@ -9,9 +9,9 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import PlayerStatsContainer from '../PlayerStatsContainer/PlayerStatsContainer';
 import AddNewTrack from '../../components/AddNewTrack/AddNewTrack';
 import Guesser from '../../components/Guesser/Guesser';
+import Hints from '../../components/Hints/Hints';
+import Status from '../../components/Status/Status';
 import axios from 'axios';
-import Clock from '../../components/Clock/Clock';
-import TextField from '@material-ui/core/TextField';
 import './ChallengeInterface.css';
 
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
@@ -30,10 +30,13 @@ class ChallengeInterface extends Component {
     groupMembers: [],
     currentUser: "",
     canGuessOptions: {},   // Keys will be names of group members, value is true if they can guess the about-to-be-added track
-    waitingOnEval: false
+    waitingOnEval: false,
+    newHint: "",
+    nextStartTime: null
   }
 
   interval = null;   // Used for refreshing page every 2 seconds
+  startVideoInterval = null;   // Used for determining whether we should start playing the video
 
   componentDidMount() {
     this.refresh();
@@ -79,7 +82,8 @@ class ChallengeInterface extends Component {
           currentPlaylistIndex: res.data.session.currentPlaylistIndex,
           playerHidden: playerHidden,
           waitingOnEval: waitingOnEval,
-          numGuesses: numGuesses
+          numGuesses: numGuesses,
+          nextStartTime: res.data.session.nextStartTime
         });
       } else if (res.data.message === "Group not found") {
         this.props.history.push('/joinGroup');
@@ -211,6 +215,12 @@ class ChallengeInterface extends Component {
     });
   }
 
+  changeHint = (event) => {
+    this.setState({
+      newHint: event.target.value
+    })
+  }
+
   setReadyForNext = (event) => {
     // Lets admin know they can move on to the next index
     axios.post('/api/setReadyForNext', { groupName: this.state.groupName, memberName: this.state.currentUser }).then(res => {
@@ -244,6 +254,27 @@ class ChallengeInterface extends Component {
     });
   }
 
+  provideHint = () => {
+    const hint = this.state.newHint;
+    this.setState({
+      newHint: ""
+    });
+    axios.post('/api/provideHint', { groupName: this.state.groupName, hint: hint }).then(res => {
+      if (res.data.success) {
+        // nothing to do for success
+      } else if (res.data.message === "Group not found") {
+        this.props.history.push('/joinGroup');
+        clearInterval(this.interval);
+        return;
+      } else {
+        // TODO: Toast
+        console.log(res);
+      }
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+
   render () {
     // User can't guess if they added the current video or if they weren't given permission by the adder
     let cannotGuess = true;
@@ -262,8 +293,12 @@ class ChallengeInterface extends Component {
       }
     }
     let guessStatus;
+    let everyoneDoneGuessing = true;
     let everyoneReady = true;
     for (let member of this.state.groupMembers) {
+      if (this.state.playlist.length && member.guessStatus !== 3 && (member.numGuesses !== 0 || member.numGuesses === 0 && member.guessStatus === 1) && this.state.playlist[this.state.currentPlaylistIndex].canGuess.indexOf(member.name) !== -1 && this.state.playlist[this.state.currentPlaylistIndex].owner !== member.name) {
+        everyoneDoneGuessing = false;
+      }
       if (member.name === this.state.currentUser) {
         guessStatus = member.guessStatus;
       } else {
@@ -282,8 +317,8 @@ class ChallengeInterface extends Component {
             <h1 className="App-title">My OST Challenge, Your Beats!</h1>
           </header>
           <div className="challenger-interface">
-            <div className="top-row-container">
-              <Clock />
+          <div className="top-row-container">
+              <Status doneGuessing={everyoneDoneGuessing} />
             </div>
             <div>
               <PlayerStatsContainer
@@ -296,6 +331,7 @@ class ChallengeInterface extends Component {
                groupMembers={this.state.groupMembers}
                everyoneReady={everyoneReady}
                currentUser={this.state.currentUser}
+               nextStartTime={this.state.nextStartTime}
               />
             </div>
             <div className="bottom-row-container">
@@ -315,12 +351,14 @@ class ChallengeInterface extends Component {
                 setReadyForNext={this.setReadyForNext}
                 isOwner={isOwner}
               />
-              <div className="card bottom-card">
-                <h1>Scratchwork</h1>
-                <div className="add-new-track-input">
-                  <TextField label="Put ideas here" multiline margin="normal"/>
-                </div>
-              </div>
+              <Hints
+                hints={this.state.playlist.length ? this.state.playlist[this.state.currentPlaylistIndex].hints : null}
+                cannotGuess={cannotGuess}
+                provideHint={this.provideHint}
+                isOwner={isOwner}
+                newHint={this.state.newHint}
+                inputChangeHandler={this.changeHint}
+              />
               <AddNewTrack
               playlist={this.state.playlist}
               inputChangeHandler={this.setNewTrackURL}

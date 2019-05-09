@@ -10,8 +10,12 @@ import './Stats.css'
 const stats = (props) => {
 
   const displayedStats = props.groupMembers.map((member) => {
-    return (<div className="stats-card" key={member.name}><span>{member.name}: {member.numCorrect} / {member.numCorrect + member.numIncorrect}
-      </span></div>)
+    return (
+    <div key={member.name}>
+      <div className="stats-name-card"><span>{member.name}</span></div>
+      <div className="stats-score-card">{member.numCorrect} / {member.numCorrect + member.numIncorrect}</div>
+    </div>
+    )
   });
 
   return (

@@ -1,6 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const Session = require('../models/session.js')
+const shuffle = require('../lib/shuffle')
+
+const partiallyShuffleArray = (arr, i) =>  {
+  // Returns a list where all elements after "i" are shuffled
+  if (arr.length <= i || i < 1) {
+    return arr;
+  }
+  let secondPart = arr.slice(i);
+  secondPart = shuffle(secondPart);
+  let k = 0;
+  for (let j=i; j<arr.length; j++) {
+    arr[j] = secondPart[k];
+    k++;
+  }
+  return arr;
+}
 
 module.exports = (router) => {
 
@@ -47,6 +63,26 @@ module.exports = (router) => {
     });
   });
 
+  router.post('/provideHint', (req, res) => {
+    Session.findOne({ groupName: req.body.groupName }, (err, session) => {
+      if (err) {
+        res.json({ success: false, message: err });
+      } else if (!session) {
+        res.json({ success: false, message: "Group not found" });
+      } else {
+        session.playlist[session.currentPlaylistIndex].hints.push(req.body.hint);
+        Session.findOneAndUpdate({ groupName: req.body.groupName }, { $set: { playlist: session.playlist } }, (err, session) => {
+          if (err) {
+            res.json({ success: false, message: err });
+          } else if (!session) {
+            res.json({ success: false, message: "Group not found" });
+          } else {
+            res.json({ success: true });
+          }
+        });
+      }
+    });
+  });
   router.post('/setNewPlaylistIndex', (req, res) => {
     Session.findOne({ groupName: req.body.groupName }, (err, session) => {
       if (err) {
@@ -78,7 +114,12 @@ module.exports = (router) => {
           groupMember.waitingOnEval = false;
           groupMember.readyForNext = false;
         }
-        Session.findOneAndUpdate({ groupName: req.body.groupName }, { $set: { members: session.members, currentPlaylistIndex: req.body.currentPlaylistIndex } }, (err, session) => {
+        // Shuffle remaining tracks
+        const newPlaylist = partiallyShuffleArray(session.playlist, req.body.currentPlaylistIndex);
+        // Create start time for next track
+        const nextStartTime = new Date();
+        nextStartTime.setSeconds(nextStartTime.getSeconds() + 7);
+        Session.findOneAndUpdate({ groupName: req.body.groupName }, { $set: { members: session.members, currentPlaylistIndex: req.body.currentPlaylistIndex, playlist: newPlaylist, nextStartTime: nextStartTime } }, (err, session) => {
           if (err) {
             res.json({ success: false, message: err });
           } else if (!session) {

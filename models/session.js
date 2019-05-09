@@ -7,7 +7,8 @@ const sessionSchema = new Schema({
   members: { type: [{ name: String, numCorrect: Number, numIncorrect: Number, newGuess: String, guessStatus: Number, waitingOnEval: Boolean, numGuesses: Number, readyForNext: Boolean }], required: true },
   playlist: { type: [{ url: String, owner: String, canGuess: [String], hints: [String] }], required: true },
   currentPlaylistIndex: { type: Number, required: true },
-  created: Date
+  created: Date,
+  nextStartTime: Date
 });
 
 module.exports = mongoose.model('Session', sessionSchema);

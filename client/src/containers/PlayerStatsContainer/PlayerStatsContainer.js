@@ -22,6 +22,7 @@ const playerStatsContainer = (props) => {
         cannotGuess={props.cannotGuess}
         everyoneReady={props.everyoneReady}
         currentUser={props.currentUser}
+        startTime={props.nextStartTime}
         />
       </div>
       <div className="stats-container">

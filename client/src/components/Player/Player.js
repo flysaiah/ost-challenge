@@ -11,8 +11,10 @@ import Slider from '@material-ui/lab/Slider';
 import IconButton from '@material-ui/core/IconButton';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Pause from '@material-ui/icons/Pause';
+import ServerDate from '../../lib/ServerDate';
 import YouTube from 'react-youtube';
 import './Player.css';
+import { Server } from 'https';
 
 class Player extends Component {
 
@@ -23,7 +25,9 @@ class Player extends Component {
 
   player = null;
   badURL = false;
-  interval = null;
+  startTime = null;
+  startInterval = null;
+  stopInterval = null;
 
   capturePlayer = (event) => {
     this.player = event.target;
@@ -52,22 +56,40 @@ class Player extends Component {
   }
 
   setIntervalCheck = () => {
-    if (!this.interval && !this.state.isPaused) {
-      this.interval = setInterval(() => {
+    if (!this.stopInterval && !this.state.isPaused) {
+      this.stopInterval = setInterval(() => {
         // If the video is about done, automatically pause it
         if (!this.state.isPaused && this.player.getDuration() != 0 && this.player.getDuration() - this.player.getCurrentTime() < .2) {
           this.pause();
-          clearInterval(this.interval);
-          this.interval = null;
+          clearInterval(this.stopInterval);
+          this.stopInterval = null;
         }
       }, 150);
+    }
+    if (!this.startInterval && this.props.startTime !== this.startTime) {
+      this.startTime = this.props.startTime;
+      this.startInterval = setInterval(() => {
+        const tmp = new Date(ServerDate());
+        if (tmp >= new Date(this.startTime) && this.player) {
+          this.play();
+          clearInterval(this.startInterval);
+          this.startInterval = null;
+        }
+      }, 100);
+      if (this.player) {
+        this.pause();
+      }
     }
   }
 
   componentWillUnmount() {
-    if (this.interval) {
-      clearInterval(this.interval);
-      this.interval = null;
+    if (this.startInterval) {
+      clearInterval(this.startInterval);
+      this.startInterval = null;
+    }
+    if (this.stopInterval) {
+      clearInterval(this.stopInterval);
+      this.stopInterval = null;
     }
   }
 

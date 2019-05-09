@@ -31,10 +31,12 @@ class ChallengeInterface extends Component {
     currentUser: "",
     canGuessOptions: {},   // Keys will be names of group members, value is true if they can guess the about-to-be-added track
     waitingOnEval: false,
-    newHint: ""
+    newHint: "",
+    nextStartTime: null
   }
 
   interval = null;   // Used for refreshing page every 2 seconds
+  startVideoInterval = null;   // Used for determining whether we should start playing the video
 
   componentDidMount() {
     this.refresh();
@@ -80,7 +82,8 @@ class ChallengeInterface extends Component {
           currentPlaylistIndex: res.data.session.currentPlaylistIndex,
           playerHidden: playerHidden,
           waitingOnEval: waitingOnEval,
-          numGuesses: numGuesses
+          numGuesses: numGuesses,
+          nextStartTime: res.data.session.nextStartTime
         });
       } else if (res.data.message === "Group not found") {
         this.props.history.push('/joinGroup');
@@ -292,7 +295,6 @@ class ChallengeInterface extends Component {
     let guessStatus;
     let everyoneDoneGuessing = true;
     let everyoneReady = true;
-    console.log(this.state.playlist[this.state.currentPlaylistIndex]);
     for (let member of this.state.groupMembers) {
       if (this.state.playlist.length && member.guessStatus !== 3 && (member.numGuesses !== 0 || member.numGuesses === 0 && member.guessStatus === 1) && this.state.playlist[this.state.currentPlaylistIndex].canGuess.indexOf(member.name) !== -1 && this.state.playlist[this.state.currentPlaylistIndex].owner !== member.name) {
         everyoneDoneGuessing = false;
@@ -329,6 +331,7 @@ class ChallengeInterface extends Component {
                groupMembers={this.state.groupMembers}
                everyoneReady={everyoneReady}
                currentUser={this.state.currentUser}
+               nextStartTime={this.state.nextStartTime}
               />
             </div>
             <div className="bottom-row-container">

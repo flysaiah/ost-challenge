@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Session = require('../models/session.js')
-const shuffle = require('../util/shuffle')
+const shuffle = require('../lib/shuffle')
 
 const partiallyShuffleArray = (arr, i) =>  {
   // Returns a list where all elements after "i" are shuffled
@@ -116,7 +116,10 @@ module.exports = (router) => {
         }
         // Shuffle remaining tracks
         const newPlaylist = partiallyShuffleArray(session.playlist, req.body.currentPlaylistIndex);
-        Session.findOneAndUpdate({ groupName: req.body.groupName }, { $set: { members: session.members, currentPlaylistIndex: req.body.currentPlaylistIndex, playlist: newPlaylist } }, (err, session) => {
+        // Create start time for next track
+        const nextStartTime = new Date();
+        nextStartTime.setSeconds(nextStartTime.getSeconds() + 7);
+        Session.findOneAndUpdate({ groupName: req.body.groupName }, { $set: { members: session.members, currentPlaylistIndex: req.body.currentPlaylistIndex, playlist: newPlaylist, nextStartTime: nextStartTime } }, (err, session) => {
           if (err) {
             res.json({ success: false, message: err });
           } else if (!session) {
